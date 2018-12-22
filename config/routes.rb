@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   }
 
   namespace :admin do
-    get 'home', to: 'home#show'
+    root 'home#show'
   end
 
   # TODO: これは仮に作ったのであとでコントローラごと消す
