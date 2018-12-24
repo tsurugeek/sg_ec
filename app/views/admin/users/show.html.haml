@@ -1,0 +1,13 @@
+%p
+  %b Email:
+  = @user.email
+%p
+  %b Reset password sent at:
+  = @user.reset_password_sent_at.try(:to_s, :db)
+%p
+  %b Confirmed at:
+  = @user.confirmed_at.try(:to_s, :db)
+
+= link_to 'Edit', edit_admin_user_path(@user)
+\|
+= link_to 'Back', admin_users_path

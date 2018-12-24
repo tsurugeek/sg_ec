@@ -1,27 +1,31 @@
 Rails.application.routes.draw do
 
-  root to: "home#show"
+  root to: "user/home#show"
 
   # TODO: adminsはnamespace: admin配下に持っていきたい。今はページがなくてやりづらいのであとで変更する。
 
-  devise_for :admins, controllers: {
-    sessions:      'admins/sessions',
-    passwords:     'admins/passwords'
+  devise_for :admins, module: :admins_devises, controllers: {
+    sessions:      'admins_devise/sessions',
+    passwords:     'admins_devise/passwords'
   }
 
   devise_for :users, controllers: {
-    confirmations: 'users/confirmations',
-    sessions:      'users/sessions',
-    passwords:     'users/passwords',
-    registrations: 'users/registrations'
+    confirmations: 'users_devise/confirmations',
+    sessions:      'users_devise/sessions',
+    passwords:     'users_devise/passwords',
+    registrations: 'users_devise/registrations'
   }
 
   namespace :admin do
     root 'home#show'
+    resources :users, only: [:index, :show, :edit, :update, :destroy]
   end
 
-  # TODO: これは仮に作ったのであとでコントローラごと消す
-  get 'home', to: 'home#show'
+  scope module: :user do
+    # scopeではrootを設定できない。namespaceだけっぽい。
+    # TODO: これは仮に作ったのであとでコントローラごと消す
+    get '/', to: 'home#show', as: :user_root
+  end
 
 
 end
