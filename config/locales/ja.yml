@@ -1,5 +1,14 @@
 ---
 ja:
+  links:
+    show: 表示
+    edit: 編集
+    destroy: 削除
+    back: 戻る
+  messages:
+    created: "作成しました"
+    updated: "更新しました"
+    destroyed: "削除しました"
   activerecord:
     errors:
       messages:
@@ -7,6 +16,22 @@ ja:
         restrict_dependent_destroy:
           has_one: "%{record}が存在しているので削除できません"
           has_many: "%{record}が存在しているので削除できません"
+    models:
+      user: ユーザ
+      shipping_address: 送付先情報
+    attributes:
+      user:
+        email: E-mail
+        reset_password_sent_at: "パスワードリセットメール送信日時"
+        confirmed_at: "E-mail確認日時"
+      shipping_address:
+        name: 氏名
+        postal_code: 郵便番号
+        prefecture: 都道府県
+        city: 市町村
+        address: その他住所
+        building: 建物
+
   date:
     abbr_day_names:
     - 日

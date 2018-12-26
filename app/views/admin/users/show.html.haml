@@ -1,13 +1,15 @@
 %p
-  %b Email:
+  %b= "#{User.human_attribute_name :email}:"
   = @user.email
 %p
-  %b Reset password sent at:
-  = @user.reset_password_sent_at.try(:to_s, :db)
-%p
-  %b Confirmed at:
+  %b= "#{User.human_attribute_name :confirmed_at}:"
   = @user.confirmed_at.try(:to_s, :db)
 
-= link_to 'Edit', edit_admin_user_path(@user)
+- [:name, :postal_code, :prefecture, :city, :address, :building].each do |attr|
+  %p
+    %b= "#{ShippingAddress.human_attribute_name attr}:"
+    = @user.shipping_address[attr]
+
+= link_to I18n.t('links.edit'), edit_admin_user_path(@user)
 \|
-= link_to 'Back', admin_users_path
+= link_to I18n.t('links.back'), admin_users_path

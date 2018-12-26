@@ -13,7 +13,7 @@ class Admin::UsersController < Admin::ApplicationController
 
   def update
     if @user.update(user_params)
-      redirect_to [:admin, @user], notice: 'User was successfully updated.'
+      redirect_to [:admin, @user], notice: I18n.t('messages.updated')
     else
       render :edit
     end
@@ -21,7 +21,7 @@ class Admin::UsersController < Admin::ApplicationController
 
   def destroy
     @user.destroy
-    redirect_to admin_users_url, notice: 'User was successfully destroyed.'
+    redirect_to admin_users_url, notice: I18n.t('messages.destroyed')
   end
 
   private
@@ -30,6 +30,6 @@ class Admin::UsersController < Admin::ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:email, :reset_password_sent_at, :confirmed_at)
+      params.require(:user).permit(shipping_address_attributes: [:id, :name, :postal_code, :prefecture, :city, :address, :building])
     end
 end

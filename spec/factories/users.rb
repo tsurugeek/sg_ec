@@ -1,7 +1,11 @@
 FactoryBot.define do
   factory :user do
-    email { "MyString" }
-    reset_password_sent_at { "2018-12-21 21:10:38" }
-    confirmed_at { "2018-12-21 21:10:38" }
+    sequence :email do |n|
+      "user_#{n}@example.com"
+    end
+    sequence :password do |n|
+      "password_#{n}"
+    end
+    confirmed_at {Time.now}
   end
 end
