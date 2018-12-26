@@ -9,6 +9,8 @@
     = javascript_include_tag('application', {'data-turbolinks-track': 'reload'})
   %body
     %main.container{role: "main", class: ("devise_main" if devise_controller?)}
-      %p.notice= notice
-      %p.alert= alert
+      - if notice.present?
+        %p.notice.alert.alert.alert-primary= notice
+      - if alert.present?
+        %p.alert.alert-danger= alert
       = yield

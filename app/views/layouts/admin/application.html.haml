@@ -19,7 +19,7 @@
           %ul.navbar-nav.mr-auto
             %li.nav-item{class: ('active' if nav_active?('users'))}
               %a.nav-link{href: admin_users_path}
-                商品
+                = User.model_name.human
                 - if nav_active?('users')
                   %span.sr-only (current)
             %li.nav-item
@@ -29,6 +29,8 @@
             %li.nav-item
               = link_to "ログアウト", destroy_admin_session_path, class: "a.nav-link", method: 'delete'
     %main.container{role: "main", class: ("devise_main" if devise_controller?)}
-      %p.notice= notice
-      %p.alert= alert
+      - if notice.present?
+        %p.notice.alert.alert.alert-primary= notice
+      - if alert.present?
+        %p.alert.alert-danger= alert
       = yield
