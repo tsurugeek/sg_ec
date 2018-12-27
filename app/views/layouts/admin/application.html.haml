@@ -22,9 +22,11 @@
                 = User.model_name.human
                 - if nav_active?('users')
                   %span.sr-only (current)
-            %li.nav-item
-              %a.nav-link{href: "#"}
-                xxx
+            %li.nav-item{class: ('active' if nav_active?('products'))}
+              %a.nav-link{href: admin_products_path}
+                = Product.model_name.human
+                - if nav_active?('products')
+                  %span.sr-only (current)
           %ul.navbar-nav
             %li.nav-item
               = link_to "ログアウト", destroy_admin_session_path, class: "a.nav-link", method: 'delete'

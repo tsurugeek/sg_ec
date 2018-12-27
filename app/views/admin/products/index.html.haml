@@ -1,0 +1,29 @@
+%h1= "#{Product.model_name.human}の一覧"
+
+%table.table-striped.table-bordered.table-hover
+  %thead
+    %tr
+      %th= Product.human_attribute_name(:name)
+      %th= Product.human_attribute_name(:price)
+      %th= Product.human_attribute_name(:description)
+      %th= Product.human_attribute_name(:active)
+      %th= Product.human_attribute_name(:sort_no)
+      %th
+      %th
+      %th
+
+  %tbody
+    - @products.each do |product|
+      %tr
+        %td= product.name
+        %td.text-right= number_with_delimiter(product.price)
+        %td= product.description
+        %td= product.active
+        %td.text-right= number_with_delimiter(product.sort_no)
+        %td= link_to I18n.t('links.show'), [:admin, product]
+        %td= link_to I18n.t('links.edit'), edit_admin_product_path(product)
+        %td= link_to I18n.t('links.destroy'), [:admin, product], method: :delete, data: { confirm: I18n.t('messages.confirm') }
+
+%br
+
+= link_to I18n.t('links.new'), new_admin_product_path

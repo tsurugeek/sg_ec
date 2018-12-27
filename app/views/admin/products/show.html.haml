@@ -1,0 +1,19 @@
+%p
+  %b Name:
+  = @product.name
+%p
+  %b Price:
+  = @product.price
+%p
+  %b Description:
+  = @product.description
+%p
+  %b Active:
+  = @product.active
+%p
+  %b Sort no:
+  = @product.sort_no
+
+= link_to I18n.t('links.edit'), edit_admin_product_path(@product)
+\|
+= link_to I18n.t('links.back'), admin_products_path

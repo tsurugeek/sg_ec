@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   namespace :admin do
     root 'home#show'
     resources :users, only: [:index, :show, :edit, :update, :destroy]
+    resources :products
   end
 
   scope module: :user do
