@@ -1,17 +1,17 @@
 %p
-  %b Name:
+  %b= "#{Product.human_attribute_name :name}:"
   = @product.name
 %p
-  %b Price:
+  %b= "#{Product.human_attribute_name :price}:"
   = @product.price
 %p
-  %b Description:
+  %b= "#{Product.human_attribute_name :description}:"
   = @product.description
 %p
-  %b Hidden:
+  %b= "#{Product.human_attribute_name :hidden}:"
   = @product.hidden
 %p
-  %b Sort no:
+  %b= "#{Product.human_attribute_name :sort_no}:"
   = @product.sort_no
 
 = link_to I18n.t('links.edit'), edit_admin_product_path(@product)
