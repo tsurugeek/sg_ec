@@ -8,4 +8,12 @@ class Product < ApplicationRecord
   validates :sort_no, presence: true, if: -> {!hidden}
   validates :sort_no, numericality: {only_integer: true, less_than: 1_000_000}, if: -> {sort_no.present?}
 
+
+  def hidden_name
+    if hidden
+      "非表示"
+    else
+      "表示"
+    end
+  end
 end

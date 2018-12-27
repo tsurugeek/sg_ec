@@ -18,7 +18,7 @@
         %td= product.name
         %td.text-right= number_with_delimiter(product.price)
         %td= product.description
-        %td= product.hidden
+        %td= product.hidden_name
         %td.text-right= number_with_delimiter(product.sort_no)
         %td= link_to I18n.t('links.show'), [:admin, product]
         %td= link_to I18n.t('links.edit'), edit_admin_product_path(product)
