@@ -10,9 +10,9 @@ RSpec.describe Product, type: :model do
       expect(product.errors[:name].size).to be > 0
     end
 
-    context "active == true の時" do
+    context "hidden == false の時" do
       it "空のpriceまたはsort_noは異常" do
-        product.active = true
+        product.hidden = false
         product.price = nil
         product.sort_no = nil
         product.valid?
@@ -21,9 +21,9 @@ RSpec.describe Product, type: :model do
       end
     end
 
-    context "active == false の時" do
+    context "hidden == true の時" do
       it "空のpriceまたはsort_noは正常" do
-        product.active = false
+        product.hidden = true
         product.price = nil
         product.sort_no = nil
         product.valid?

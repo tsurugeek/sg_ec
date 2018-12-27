@@ -4,7 +4,7 @@ class CreateProducts < ActiveRecord::Migration[5.2]
       t.string :name,      null: false, index: {unique: true}
       t.integer :price
       t.text :description
-      t.boolean :active,   null: false, default: false
+      t.boolean :hidden,   null: false, default: true
       t.integer :sort_no
 
       t.timestamps

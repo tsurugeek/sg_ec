@@ -3,7 +3,7 @@ FactoryBot.define do
     sequence(:name) {|n|"product name #{n}"}
     sequence(:price) {|n| n * 100}
     sequence(:description) {|n| "product description #{n}"}
-    active { true }
+    hidden { false }
     sequence(:sort_no) {|n| n * 10}
   end
 end

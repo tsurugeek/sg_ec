@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 2018_12_27_063427) do
     t.string "name", null: false
     t.integer "price"
     t.text "description"
-    t.boolean "active", default: false, null: false
+    t.boolean "hidden", default: true, null: false
     t.integer "sort_no"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -38,7 +38,7 @@ ja:
         name: "商品名"
         price: "価格"
         description: "商品説明"
-        active: "有効フラグ"
+        hidden: "非表示フラグ"
         sort_no: "表示順"
   date:
     abbr_day_names:
