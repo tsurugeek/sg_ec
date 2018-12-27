@@ -17,16 +17,8 @@
           %span.navbar-toggler-icon
         .collapse.navbar-collapse{id: "navbarSupportedContent"}
           %ul.navbar-nav.mr-auto
-            %li.nav-item{class: ('active' if nav_active?('users'))}
-              %a.nav-link{href: admin_users_path}
-                = User.model_name.human
-                - if nav_active?('users')
-                  %span.sr-only (current)
-            %li.nav-item{class: ('active' if nav_active?('products'))}
-              %a.nav-link{href: admin_products_path}
-                = Product.model_name.human
-                - if nav_active?('products')
-                  %span.sr-only (current)
+            = nav_item(User.model_name.human, admin_users_path, 'users')
+            = nav_item(Product.model_name.human, admin_products_path, 'products')
           %ul.navbar-nav
             %li.nav-item
               = link_to "ログアウト", destroy_admin_session_path, class: "a.nav-link", method: 'delete'
