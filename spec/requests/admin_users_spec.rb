@@ -39,8 +39,8 @@ RSpec.describe "Admin::Users", type: :request do
       user.shipping_address.building = "shipping_address.building"
       put admin_user_path(user), params: {user: {shipping_address_attributes: user.shipping_address.attributes}}
       expect(response).to redirect_to(admin_user_path(user))
+      follow_redirect!
 
-      get admin_user_path(user)
       expect(response.body).to include("shipping_address.name")
       expect(response.body).to include("123-4567")
       expect(response.body).to include("shipping_address.prefecture")
