@@ -1,4 +1,5 @@
 class Product < ApplicationRecord
+  mount_uploader :product_image, ProductImageUploader
 
   validates :name, presence: true,
                    uniqueness: true
@@ -7,7 +8,8 @@ class Product < ApplicationRecord
   validates :description, length: { maximum: 500 }
   validates :sort_no, presence: true, if: -> {!hidden}
   validates :sort_no, numericality: {only_integer: true, less_than: 1_000_000}, if: -> {sort_no.present?}
-
+  validates :product_image, presence: true, if: -> {!hidden}
+  validates :remove_product_image, exclusion: { in: ["1"], message: "は公開中に実施できません" }, if: -> {!hidden}
 
   def hidden_name
     if hidden
@@ -16,4 +18,5 @@ class Product < ApplicationRecord
       "表示"
     end
   end
+
 end

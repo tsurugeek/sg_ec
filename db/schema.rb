@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2018_12_27_063427) do
     t.text "description"
     t.boolean "hidden", default: true, null: false
     t.integer "sort_no"
+    t.string "product_image"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_products_on_name", unique: true

@@ -40,6 +40,8 @@ ja:
         description: "商品説明"
         hidden: "非表示フラグ"
         sort_no: "表示順"
+        product_image: "商品画像"
+        remove_product_image: "商品画像の削除"
   date:
     abbr_day_names:
     - 日

@@ -13,6 +13,9 @@
 %p
   %b= "#{Product.human_attribute_name :sort_no}:"
   = @product.sort_no
+%p
+  %b= "#{Product.human_attribute_name :product_image}:"
+  %div= image_tag(@product.product_image_url(:thumb)) if @product.product_image?
 
 = link_to I18n.t('links.edit'), edit_admin_product_path(@product)
 \|

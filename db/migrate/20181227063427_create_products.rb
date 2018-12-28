@@ -6,6 +6,7 @@ class CreateProducts < ActiveRecord::Migration[5.2]
       t.text :description
       t.boolean :hidden,   null: false, default: true
       t.integer :sort_no
+      t.string :product_image
 
       t.timestamps
     end
