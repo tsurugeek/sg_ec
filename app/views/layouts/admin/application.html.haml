@@ -9,22 +9,23 @@
     = javascript_include_tag('application_admin', {'data-turbolinks-track': 'reload'})
   %body
     - if admin_signed_in?
-      %nav.navbar.navbar-expand-lg.fixed-top.navbar-light.bg-light
-        %a.navbar-brand{href: "#"}
-          さくらマーケット管理
-        =# TODO: 以下のbuttonは何？
-        %button.navbar-toggler{type: "button", "data-toggle": "collapse", "data-target": "#navbarSupportedContent", "aria-controls": "navbarSupportedContent", "aria-expanded": "false", "aria-label": "Toggle navigation"}
-          %span.navbar-toggler-icon
-        .collapse.navbar-collapse{id: "navbarSupportedContent"}
-          %ul.navbar-nav.mr-auto
-            = nav_item(User.model_name.human, admin_users_path, 'users')
-            = nav_item(Product.model_name.human, admin_products_path, 'products')
-          %ul.navbar-nav
-            %li.nav-item
-              = link_to "ログアウト", destroy_admin_session_path, class: "a.nav-link", method: 'delete'
+      %nav.navbar.navbar-default.navbar-fixed-top
+        .container-fluid
+          .navbar-header
+            %a.navbar-brand{href: "#"} さくらマーケット管理
+          .collapse.navbar-collapse
+            %ul.nav.navbar-nav
+              = nav_item(User.model_name.human, admin_users_path, 'users')
+              = nav_item(Product.model_name.human, admin_products_path, 'products')
+            %ul.nav.navbar-nav.navbar-right
+              %li= link_to "ログアウト", destroy_admin_session_path, class: "navbar-link", method: 'delete'
     %main.container{role: "main", class: ("devise_main" if devise_controller?)}
       - if notice.present?
-        %p.notice.alert.alert.alert-primary= notice
+        .alert.alert-info
+          %span.glyphicon.glyphicon-exclamation-sign{aria: {hidden: true}}
+          = notice
       - if alert.present?
-        %p.alert.alert-danger= alert
+        .alert.alert-danger
+          %span.glyphicon.glyphicon-exclamation-sign{aria: {hidden: true}}
+          = alert
       = yield

@@ -10,7 +10,11 @@
   %body
     %main.container{role: "main", class: ("devise_main" if devise_controller?)}
       - if notice.present?
-        %p.notice.alert.alert.alert-primary= notice
+        .alert.alert-info
+          %span.glyphicon.glyphicon-exclamation-sign{aria: {hidden: true}}
+          = notice
       - if alert.present?
-        %p.alert.alert-danger= alert
+        .alert.alert-danger
+          %span.glyphicon.glyphicon-exclamation-sign{aria: {hidden: true}}
+          = alert
       = yield
