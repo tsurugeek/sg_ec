@@ -33,6 +33,12 @@ class Admin::ProductsController < Admin::ApplicationController
     end
   end
 
+  def update_sort_nos
+    Product.update_sort_nos(params[:ids].try(:split, ","))
+
+    redirect_to admin_products_path, notice: "#{Product.human_attribute_name(:sort_no)}を変更しました"
+  end
+
   def destroy
     @product.destroy
     redirect_to admin_products_url, notice: I18n.t('messages.destroyed')

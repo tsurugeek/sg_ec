@@ -47,4 +47,39 @@ RSpec.describe Product, type: :model do
       end
     end
   end
+
+  describe "#update_sort_nos" do
+    let!(:product1){create(:product, sort_no: 0)}
+    let!(:product2){create(:product, sort_no: 1)}
+    let!(:product3){create(:product, sort_no: 2)}
+
+    it "引数がnilの場合は処理を実施しない" do
+      Product.update_sort_nos(nil)
+      expect(product1.sort_no).to eq 0
+      expect(product2.sort_no).to eq 1
+      expect(product3.sort_no).to eq 2
+    end
+
+    it "引数が[]の場合は処理を実施しない" do
+      Product.update_sort_nos([])
+      expect(product1.sort_no).to eq 0
+      expect(product2.sort_no).to eq 1
+      expect(product3.sort_no).to eq 2
+    end
+
+    it "引数に指定されたidの配列の順番にsortnoを更新する" do
+      Product.update_sort_nos([product2.id, product3.id, product1.id])
+      expect(product1.reload.sort_no).to eq 2
+      expect(product2.reload.sort_no).to eq 0
+      expect(product3.reload.sort_no).to eq 1
+    end
+
+    it "引数に指定されいないProductのsortnoは0に更新する" do
+      Product.update_sort_nos([product3.id, product1.id])
+      expect(product1.reload.sort_no).to eq 1
+      expect(product2.reload.sort_no).to eq 0
+      expect(product3.reload.sort_no).to eq 0
+    end
+  end
+
 end

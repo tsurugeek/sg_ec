@@ -11,6 +11,17 @@ class Product < ApplicationRecord
   validates :product_image, presence: true, if: -> {!hidden}
   validates :remove_product_image, exclusion: { in: ["1"], message: "は公開中に実施できません" }, if: -> {!hidden}
 
+  def self.update_sort_nos ids
+    return if ids.blank?
+
+    id_and_sort_no_hash = ids.each_with_index.map{|id, index| [id.to_i, index]}.to_h
+    Product.transaction do
+      Product.all.each do |product|
+        product.update_attribute(:sort_no, id_and_sort_no_hash[product.id].to_i)
+      end
+    end
+  end
+
   def hidden_name
     if hidden
       "非表示"

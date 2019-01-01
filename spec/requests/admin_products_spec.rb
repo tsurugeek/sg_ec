@@ -71,13 +71,26 @@ RSpec.describe "Admin::Products", type: :request do
       put admin_product_path(product), params: {product: product.attributes.merge(product_image: product_image)}
       expect(response).to have_http_status(302)
       follow_redirect!
-      
+
       expect(response.body).to include("product.name")
       expect(response.body).to include("12345")
       expect(response.body).to include("product.description")
       expect(response.body).to include("67890")
       expect(response.body).to include("sample2.png")
       expect(response.body).to include(I18n.t('messages.updated'))
+    end
+  end
+
+  describe "PUT /products/update_sort_nos" do
+    let!(:product2){create(:product)}
+    let!(:product3){create(:product)}
+
+    it "udpates sort nos and redirects to show page" do
+      put update_sort_nos_admin_products_path params: {ids: "#{product2.id},#{product3.id},#{product.id}"}
+      expect(response).to have_http_status(302)
+      follow_redirect!
+      expect(response.body).to match(/#{product2.name}.+0.+#{product3.name}.+1.+#{product.name}.+2.+/m)
+      expect(response.body).to include('表示順を変更しました')
     end
   end
 
