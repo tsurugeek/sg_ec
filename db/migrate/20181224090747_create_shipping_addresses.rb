@@ -1,7 +1,8 @@
 class CreateShippingAddresses < ActiveRecord::Migration[5.2]
   def change
     create_table :shipping_addresses do |t|
-      t.belongs_to :user, null: false, index: {unique: true}, foreign_key: true
+      t.integer :shippable_id, null: false
+      t.string :shippable_type, null: false
       t.string :name
       t.string :postal_code
       t.string :prefecture
@@ -11,5 +12,6 @@ class CreateShippingAddresses < ActiveRecord::Migration[5.2]
 
       t.timestamps
     end
+    add_index :shipping_addresses, [:shippable_type, :shippable_id]
   end
 end

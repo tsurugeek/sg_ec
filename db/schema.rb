@@ -37,7 +37,8 @@ ActiveRecord::Schema.define(version: 2018_12_27_063427) do
   end
 
   create_table "shipping_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "shippable_id", null: false
+    t.string "shippable_type", null: false
     t.string "name"
     t.string "postal_code"
     t.string "prefecture"
@@ -46,7 +47,7 @@ ActiveRecord::Schema.define(version: 2018_12_27_063427) do
     t.string "building"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_shipping_addresses_on_user_id", unique: true
+    t.index ["shippable_type", "shippable_id"], name: "index_shipping_addresses_on_shippable_type_and_shippable_id"
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -66,5 +67,4 @@ ActiveRecord::Schema.define(version: 2018_12_27_063427) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "shipping_addresses", "users"
 end

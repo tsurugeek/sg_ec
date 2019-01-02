@@ -1,5 +1,5 @@
 class ShippingAddress < ApplicationRecord
-  belongs_to :user
+  belongs_to :shippable, polymorphic: true
 
   validates :name, length: { maximum: 255 }
   validates :postal_code, format: { with: /\A\d{3}-\d{4}\z/ }, if: -> {postal_code.present?}
