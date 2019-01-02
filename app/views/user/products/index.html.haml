@@ -1,0 +1,8 @@
+.row
+  - @products.each do |product|
+    .col-sm-6.col-md-4
+      .thumbnail
+        = image_tag product.product_image_url(:thumb)
+        .caption
+          %h3
+            = product.name

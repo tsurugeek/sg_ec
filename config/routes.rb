@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  root to: "user/home#show"
+  root to: 'user/products#index'
 
   # TODO: adminsはnamespace: admin配下に持っていきたい。今はページがなくてやりづらいのであとで変更する。
 
@@ -27,9 +27,8 @@ Rails.application.routes.draw do
   end
 
   scope module: :user do
-    # scopeではrootを設定できない。namespaceだけっぽい。
-    # TODO: これは仮に作ったのであとでコントローラごと消す
-    get '/', to: 'home#show', as: :user_root
+    get '/', to: 'products#index', as: :user_root
+    resources :products, only: [:index]
   end
 
 

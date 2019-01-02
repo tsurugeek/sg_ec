@@ -12,5 +12,17 @@
  *
  */
 
+@import "bootstrap-sprockets";
 @import 'bootstrap';
 @import 'base';
+
+#navbar {
+  background-color: limegreen;
+  a {
+    color: white;
+  }
+  li.active a {
+    color: white;
+    background-color: darkolivegreen;
+  }
+}

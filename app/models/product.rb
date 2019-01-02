@@ -11,6 +11,8 @@ class Product < ApplicationRecord
   validates :product_image, presence: true, if: -> {!hidden}
   validates :remove_product_image, exclusion: { in: ["1"], message: "は公開中に実施できません" }, if: -> {!hidden}
 
+  scope :published, -> {where(products: {hidden: false})}
+
   def self.update_sort_nos ids
     return if ids.blank?
 
