@@ -1,6 +1,7 @@
 class User::CartsController < User::ApplicationController
   before_action :authenticate_user!
   before_action :set_cart
+  before_action :set_delivery_schedule, only: [:edit_shipping_address, :update]
 
   rescue_from ActiveRecord::StaleObjectError do |exception|
     redirect_to edit_cart_path, alert: '他のパソコン/スマートフォンでカートの情報が変更されました。再度操作を実施してください。'
@@ -56,7 +57,11 @@ class User::CartsController < User::ApplicationController
     @cart = current_user.cart
   end
 
+  def set_delivery_schedule
+    @delivery_schedule = DeliverySchedule.new
+  end
+
   def cart_params
-    params.require(:cart).permit(:ref_shipping_address, :save_shipping_address, :lock_version, shipping_address_attributes: [:id, :name, :postal_code, :prefecture, :city, :address, :building])
+    params.require(:cart).permit(:ref_shipping_address, :save_shipping_address, :delivery_scheduled_date, :delivery_scheduled_time, :lock_version, shipping_address_attributes: [:id, :name, :postal_code, :prefecture, :city, :address, :building])
   end
 end

@@ -136,10 +136,20 @@ class Cart < Purchase
 
   def cleanup
     self.purchase_products.destroy_all
+    clear
     self.state = Cart.states[:initial]
-    self.ref_shipping_address = nil
-    self.save_shipping_address = false
     self.shipping_address.clear
     self.save!
   end
+
+  def clear
+    attrs = Cart.new.attributes
+    attrs.delete('id')
+    attrs.delete('user_id')
+    attrs.delete('lock_version')
+    attrs.delete('created_at')
+    attrs.delete('updated_at')
+    self.attributes = attrs
+  end
+
 end

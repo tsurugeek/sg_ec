@@ -14,6 +14,10 @@ class CreatePurchases < ActiveRecord::Migration[5.2]
       t.integer :consumption_tax
       t.integer :total
 
+      t.date :delivery_scheduled_date
+      t.time :delivery_scheduled_time_start
+      t.time :delivery_scheduled_time_end
+
       t.boolean :ref_shipping_address
       t.boolean :save_shipping_address,  null: false, default: true
 

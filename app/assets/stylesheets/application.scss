@@ -27,12 +27,14 @@
   }
 }
 
-address dl.dl-horizontal {
-  margin: 10px;
-  dt {
-    width: 40px;
-  }
-  dd {
-    margin-left: 60px;
+address, .delivery-schedule {
+  dl.dl-horizontal {
+    margin: 10px;
+    dt {
+      width: 60px;
+    }
+    dd {
+      margin-left: 80px;
+    }
   }
 }

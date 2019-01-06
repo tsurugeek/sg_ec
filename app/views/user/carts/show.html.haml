@@ -30,7 +30,11 @@
 %h2= "#{ShippingAddress.model_name.human}の確認"
 = render 'shared/address', shipping_address: @cart.shipping_address
 
+%h2= "#{DeliverySchedule.model_name.human}の確認"
+= render 'shared/delivery_schedule', cart: @cart
+
 .form-actions
   = simple_form_for(@cart, url: cart_path) do |f|
     = f.input :lock_version, as: :hidden
+    = link_to "戻る", edit_shipping_address_cart_path, class: 'btn btn-primary'
     = f.button :submit, "確定", class: 'btn-primary', name: 'purchase'

@@ -17,8 +17,6 @@
         = f.radio_button 'ref_shipping_address', false
         = "別の#{ShippingAddress.model_name.human}を使用（以下のフォームに入力してください）"
 
-
-
   = f.fields_for :shipping_address do |f_inner|
     .form-inputs= f_inner.input :name
     .form-inputs= f_inner.input :postal_code
@@ -27,5 +25,12 @@
     .form-inputs= f_inner.input :address
     .form-inputs= f_inner.input :building
   .form-inputs= f.input :save_shipping_address
+
+  %h2= "#{DeliverySchedule.model_name.human}"
+
+  .form-inputs= f.input :delivery_scheduled_date, collection: @delivery_schedule.deliverable_dates
+  .form-inputs= f.input :delivery_scheduled_time, collection: @delivery_schedule.deliverable_times
+
   .form-actions
+    = link_to "戻る", edit_cart_path, class: 'btn btn-primary'
     = f.button :submit, "確認画面に進む", class: 'btn-primary', name: 'fix_shipping_address'

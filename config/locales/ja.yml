@@ -57,6 +57,10 @@ ja:
         consumption_tax_rate: "消費税率"
         consumption_tax: "消費税"
         total: "合計"
+        delivery_scheduled_date: "配送日"
+        delivery_scheduled_time: "配送時刻"
+        delivery_scheduled_time_start: "配送時刻の開始"
+        delivery_scheduled_time_end: "配送時刻の終了"
       cart:
         ref_shipping_address: "使用する送付先情報"
         save_shipping_address: "送付先情報を保存する"
@@ -66,6 +70,10 @@ ja:
         price: "価格"
         num: "数量"
         total: "合計"
+  activemodel:
+    models:
+      delivery_schedule: "配送日時"
+    attributes:
   date:
     abbr_day_names:
     - 日

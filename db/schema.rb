@@ -61,6 +61,9 @@ ActiveRecord::Schema.define(version: 2019_01_02_082007) do
     t.integer "consumption_tax_rate"
     t.integer "consumption_tax"
     t.integer "total"
+    t.date "delivery_scheduled_date"
+    t.time "delivery_scheduled_time_start"
+    t.time "delivery_scheduled_time_end"
     t.boolean "ref_shipping_address"
     t.boolean "save_shipping_address", default: true, null: false
     t.integer "lock_version", default: 0, null: false
