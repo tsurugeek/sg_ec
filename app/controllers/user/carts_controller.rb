@@ -4,7 +4,7 @@ class User::CartsController < User::ApplicationController
   before_action :set_delivery_schedule, only: [:edit_shipping_address, :update]
 
   rescue_from ActiveRecord::StaleObjectError do |exception|
-    redirect_to edit_cart_path, alert: '他のパソコン/スマートフォンでカートの情報が変更されました。再度操作を実施してください。'
+    redirect_to edit_cart_path, alert: "他のパソコン/スマートフォンで#{Cart.model_name.human}の情報が変更されました。再度操作を実施してください。"
   end
 
   def show
@@ -15,7 +15,7 @@ class User::CartsController < User::ApplicationController
 
   def edit
     unless @cart.purchase_products.any?
-      flash.now.notice = 'ショッピングカートは空です'
+      flash.now.notice = "#{Cart.model_name.human}は空です"
     end
   end
 

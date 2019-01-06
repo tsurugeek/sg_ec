@@ -10,7 +10,7 @@ class User::CartProductsController < User::ApplicationController
 
   def create
     if @cart_product.valid_attribute?(:num) && @cart.add_product(@product, @cart_product.num)
-      redirect_to edit_cart_path, notice: 'カートに保存しました'
+      redirect_to edit_cart_path, notice: "#{Cart.model_name.human}に保存しました"
     else
       render :new
     end
@@ -23,14 +23,14 @@ class User::CartProductsController < User::ApplicationController
       @cart_product = @cart.purchase_products.find_by(product:  @product)
       render :update_num
     else
-      flash.now[:alert] = "数量を変更できませんでした。カートを再表示してから再度実行してください。"
+      flash.now[:alert] = "数量を変更できませんでした。#{Cart.model_name.human}を再表示してから再度実行してください。"
       render partial: 'shared/message'
     end
   end
 
   def destroy
     @cart.remove_product(@product)
-    redirect_to edit_cart_path, notice: 'カートから削除しました'
+    redirect_to edit_cart_path, notice: "#{Cart.model_name.human}から削除しました"
   end
 
   private

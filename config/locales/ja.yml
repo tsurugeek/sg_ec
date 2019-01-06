@@ -22,7 +22,7 @@ ja:
       user: "ユーザ"
       shipping_address: "送付先情報"
       product: "商品"
-      cart: "カート"
+      cart: "ショッピングカート"
       purchase: "購入履歴"
       purchase_product: "商品"
     attributes:
