@@ -71,7 +71,7 @@ class Cart < Purchase
     self.products_num, self.subtotal = calc_products_num_and_subtotal
     self.shipping_cost = calc_shipping_cost
     self.cod_fee = calc_cod_fee
-    self.consumption_tax = calc_consumption_tax
+    self.consumption_tax_rate, self.consumption_tax = calc_consumption_tax
     self.total = calc_total
   end
 
@@ -99,7 +99,8 @@ class Cart < Purchase
   end
 
   def calc_consumption_tax
-    ConsumptionTaxRate.calc_current(self.subtotal.to_i + self.shipping_cost.to_i + self.cod_fee.to_i)
+    current_tax = ConsumptionTaxRate.current
+    [current_tax.rate, current_tax.calc(self.subtotal.to_i + self.shipping_cost.to_i + self.cod_fee.to_i)]
   end
 
   def calc_total
