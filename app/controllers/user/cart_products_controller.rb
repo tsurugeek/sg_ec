@@ -1,7 +1,7 @@
 class User::CartProductsController < User::ApplicationController
   before_action :authenticate_user!, except: [:new]
   before_action :set_product
-  before_action :set_cart
+  before_action :set_cart, except: [:new]
   before_action :set_cart_product, only: [:create, :update_num]
 
   def new
