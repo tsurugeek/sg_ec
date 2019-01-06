@@ -22,6 +22,9 @@ ja:
       user: "ユーザ"
       shipping_address: "送付先情報"
       product: "商品"
+      cart: "カート"
+      purchase: "購入履歴"
+      purchase_product: "商品"
     attributes:
       user:
         email: "E-mail"
@@ -42,6 +45,27 @@ ja:
         sort_no: "表示順"
         product_image: "商品画像"
         remove_product_image: "商品画像の削除"
+      purchase:
+        user: "ユーザ"
+        state: "状態"
+        purchased_at: "購入日時"
+        delivered_at: "配送日時"
+        subtotal: "小計"
+        products_num: "商品数"
+        shipping_cost: "送料"
+        cod_fee: "代引き手数料"
+        consumption_tax_rate: "消費税率"
+        consumption_tax: "消費税"
+        total: "合計"
+      cart:
+        ref_shipping_address: "使用する送付先情報"
+        save_shipping_address: "送付先情報を保存する"
+      purchase_product:
+        purchase: "購入"
+        product: "商品"
+        price: "価格"
+        num: "数量"
+        total: "合計"
   date:
     abbr_day_names:
     - 日

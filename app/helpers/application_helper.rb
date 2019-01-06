@@ -1,10 +1,6 @@
 module ApplicationHelper
-  # def nav_active?(name)
-  #   controller_name == name
-  # end
-
-  def nav_item item_name, path, active_controller_name
-    is_active = active_controller_name == controller_name
+  def nav_item item_name, path, active_controller_names
+    is_active = active_controller_names.include?(controller_name)
 
     tag.li class: "#{"active" if is_active}" do |li|
       concat li.a(item_name, href: path, class: "nav-link")

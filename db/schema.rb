@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_27_063427) do
+ActiveRecord::Schema.define(version: 2019_01_02_082007) do
 
   create_table "admins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "email", null: false
@@ -34,6 +34,40 @@ ActiveRecord::Schema.define(version: 2018_12_27_063427) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_products_on_name", unique: true
+  end
+
+  create_table "purchase_products", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "purchase_id", null: false
+    t.bigint "product_id", null: false
+    t.integer "price", null: false
+    t.integer "num", default: 1, null: false
+    t.integer "total", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_purchase_products_on_product_id"
+    t.index ["purchase_id"], name: "index_purchase_products_on_purchase_id"
+  end
+
+  create_table "purchases", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "type", null: false
+    t.integer "state", null: false
+    t.datetime "purchased_at"
+    t.datetime "delivered_at"
+    t.integer "subtotal"
+    t.integer "products_num", default: 0, null: false
+    t.integer "shipping_cost"
+    t.integer "cod_fee"
+    t.integer "consumption_tax_rate"
+    t.integer "consumption_tax"
+    t.integer "total"
+    t.boolean "ref_shipping_address"
+    t.boolean "save_shipping_address", default: true, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "type"], name: "index_purchases_on_user_id_and_type"
+    t.index ["user_id"], name: "index_purchases_on_user_id"
   end
 
   create_table "shipping_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

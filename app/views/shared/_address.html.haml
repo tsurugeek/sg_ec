@@ -1,0 +1,6 @@
+%address
+  %dl.dl-horizontal
+    %dt 住所
+    %dd= "〒#{shipping_address.postal_code} #{shipping_address.prefecture} #{shipping_address.city}#{shipping_address.address} #{shipping_address.building}"
+    %dt 名前
+    %dd= shipping_address.name

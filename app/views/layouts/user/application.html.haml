@@ -14,7 +14,10 @@
           %a.navbar-brand{href: root_path} さくらマーケット
         .collapse.navbar-collapse
           %ul.nav.navbar-nav
-            = nav_item('お買い物', products_path, 'products')
+            = nav_item('お買い物', products_path, ['products', 'cart_products'])
+          %ul.nav.navbar-nav
+            = nav_item('カート', edit_cart_path, 'carts')
+
           %ul.nav.navbar-nav.navbar-right
             - if user_signed_in?
               %li= link_to "ログアウト", destroy_user_session_path, class: "navbar-link", method: 'delete'

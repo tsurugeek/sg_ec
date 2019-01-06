@@ -5,4 +5,4 @@
         = image_tag product.product_image_url(:thumb)
         .caption
           %h3
-            = product.name
+            = link_to product.name, new_product_cart_products_path(product)

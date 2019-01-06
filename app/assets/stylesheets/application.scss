@@ -26,3 +26,13 @@
     background-color: darkolivegreen;
   }
 }
+
+address dl.dl-horizontal {
+  margin: 10px;
+  dt {
+    width: 40px;
+  }
+  dd {
+    margin-left: 60px;
+  }
+}

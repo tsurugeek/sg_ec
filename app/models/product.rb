@@ -1,6 +1,9 @@
 class Product < ApplicationRecord
   mount_uploader :product_image, ProductImageUploader
 
+  has_many :purchase_products
+  has_many :purchases, through: :purchase_products
+
   validates :name, presence: true,
                    uniqueness: true
   validates :price, presence: true, if: -> {!hidden}

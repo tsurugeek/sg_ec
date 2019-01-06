@@ -1,0 +1,15 @@
+.media
+  .media-left.media-middle
+    = image_tag @product.product_image_url, class: 'media-object'
+  .media-body
+    %h4.media-heading= @product.name
+    = @product.description
+
+    = simple_form_for(@cart_product, url: product_cart_products_path(@product)) do |f|
+      = f.error_notification
+      = f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present?
+
+      .form-inputs
+        = f.input :num
+      .form-actions
+        = f.button :submit, "カートに入れる", class: 'btn-primary'

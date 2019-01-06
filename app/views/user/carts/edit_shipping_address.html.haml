@@ -1,0 +1,31 @@
+%h1= "#{ShippingAddress.model_name.human}の編集"
+
+= simple_form_for(@cart, url: cart_path, method: :put) do |f|
+  = f.error_notification
+  = f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present?
+
+  = f.input :lock_version, as: :hidden
+  - if current_user.shipping_address.available?
+    .radio
+      %label
+        = f.radio_button 'ref_shipping_address', true
+        %div= "以前保存した#{ShippingAddress.model_name.human}を使用"
+        = render 'shared/address', shipping_address: current_user.shipping_address
+
+    .radio
+      %label
+        = f.radio_button 'ref_shipping_address', false
+        = "別の#{ShippingAddress.model_name.human}を使用（以下のフォームに入力してください）"
+
+
+
+  = f.fields_for :shipping_address do |f_inner|
+    .form-inputs= f_inner.input :name
+    .form-inputs= f_inner.input :postal_code
+    .form-inputs= f_inner.input :prefecture
+    .form-inputs= f_inner.input :city
+    .form-inputs= f_inner.input :address
+    .form-inputs= f_inner.input :building
+  .form-inputs= f.input :save_shipping_address
+  .form-actions
+    = f.button :submit, "確認画面に進む", class: 'btn-primary', name: 'fix_shipping_address'
