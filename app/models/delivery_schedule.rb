@@ -19,6 +19,7 @@ class DeliverySchedule
     date.cwday <= 5
   end
 
+
   def initialize base_date = Date.today
     @base_date = base_date
   end
@@ -42,7 +43,7 @@ class DeliverySchedule
 
   def deliverable_splitted_times
     [
-      [ '8:00', '12:00'],
+      ['08:00', '12:00'],
       ['12:00', '14:00'],
       ['14:00', '16:00'],
       ['16:00', '18:00'],

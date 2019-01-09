@@ -1,19 +1,25 @@
 class Cart < Purchase
+  include ActiveSupport::NumberHelper
+
   enum state: {initial: 0, products_fixed: 2, shipping_address_fixed: 4, purchased: 10}
+
+  validates :products_num, numericality: {only_integer: true, greater_than: 0, less_than: 10_000}, unless: -> {initial?}
 
   after_create do |purchase|
     purchase.create_shipping_address
   end
-  before_update :calc_all
+  before_update :check_consistency
+  before_update :calc_all, if: :initial?
   after_update :copy_to_purchase_history, if: :purchased?
   after_update :copy_to_user_shipping_address, if: :purchased?
-  after_update :cleanup, if: :purchased?
+  after_update :clear_all, if: :purchased?
 
   def add_product product, num
     self.with_lock do
       catch(:loop_end) do
         self.purchase_products.each do |cart_product|
           if cart_product.product == product
+            cart_product.name = product.name
             cart_product.price = product.price
             cart_product.num += num
             cart_product.total = cart_product.price * cart_product.num
@@ -21,9 +27,11 @@ class Cart < Purchase
           end
         end
         cart_product = self.purchase_products.build({product: product, num: num})
+        cart_product.name = product.name
         cart_product.price = product.price
         cart_product.total = cart_product.price * cart_product.num
       end
+      self.state = Cart.states[:initial]
       self.save
     end
   end
@@ -32,12 +40,14 @@ class Cart < Purchase
     self.with_lock do
       self.purchase_products.each do |cart_product|
         if cart_product.product == product
+          cart_product.name = product.name
           cart_product.price = product.price
           cart_product.num = num
           cart_product.total = cart_product.price * cart_product.num
           break
         end
       end
+      self.state = Cart.states[:initial]
       self.save
     end
   end
@@ -47,38 +57,113 @@ class Cart < Purchase
       self.purchase_products.each do |cart_product|
         cart_product.mark_for_destruction if cart_product.product == product
       end
+      self.state = Cart.states[:initial]
       self.save
     end
   end
 
-  def update_shipping_address
-    self.state = Cart.states[:shipping_address_fixed]
+  def fix_products lock_version
+    self.lock_version = lock_version
+    self.update(state: Cart.states[:products_fixed])
+  end
+
+  def fix_shipping_address ref_shipping_address: false, save_shipping_address:, delivery_scheduled_date:, delivery_scheduled_time:, lock_version:, shipping_address_attributes:
+    cart_attributes = {
+      ref_shipping_address:    ref_shipping_address,
+      save_shipping_address:   save_shipping_address,
+      delivery_scheduled_date: delivery_scheduled_date,
+      delivery_scheduled_time: delivery_scheduled_time,
+      lock_version:            lock_version,
+      shipping_address_attributes: shipping_address_attributes
+    }
+    self.attributes = cart_attributes
+
     if self.ref_shipping_address?
       self.shipping_address.copy_from(self.user.shipping_address)
     end
     self.shipping_address.should_be_fixed = true
+    self.state = Cart.states[:shipping_address_fixed]
     self.save
   end
 
-  def purchase
+  def purchase lock_version
+    self.lock_version = lock_version
     self.state = Cart.states[:purchased]
     self.save
   end
 
   private
 
+  def check_consistency
+    messages = []
+
+    if self.state_changed?
+      if self.shipping_address_fixed? &&  self.state_was == 'initial'
+        messages << 'ショッピングカート内の商品を保存してから送付先情報を保存してください。'
+      end
+
+      if self.purchased? && ['initial', 'products_fixed'].include?(self.state_was)
+        messages << '送付先情報を保存してから確定してください。'
+      end
+    end
+
+    if !self.initial?
+      if ConsumptionTaxRate.current.rate != self.consumption_tax_rate
+        messages << "消費税率が#{self.consumption_tax_rate}から#{ConsumptionTaxRate.current.rate}に変更になっているためショッピングカートをご確認ください。"
+      end
+
+      self.purchase_products.each do |purchase_product|
+        if purchase_product.product.blank? || purchase_product.product.hidden?
+          messages << "商品「#{purchase_product.name}」が販売中止になっているためショッピングカートをご確認ください。"
+        else
+          if purchase_product.name != purchase_product.product.name
+            messages << "商品「#{purchase_product.product.name}」の名前が#{number_to_currency(purchase_product.name)}から#{number_to_currency(purchase_product.product.name)}に変更になっているためショッピングカートをご確認ください。"
+          end
+          if purchase_product.price != purchase_product.product.price
+            messages << "商品「#{purchase_product.product.name}」の価格が#{number_to_currency(purchase_product.price)}から#{number_to_currency(purchase_product.product.price)}に変更になっているためショッピングカートをご確認ください。"
+          end
+        end
+      end
+    end
+
+    if self.shipping_address_fixed? || self.purchased?
+      delivery_schedule = DeliverySchedule.new
+      if self.delivery_scheduled_date.present?
+        deliverable_dates = delivery_schedule.deliverable_dates
+        if deliverable_dates.exclude?(self.delivery_scheduled_date)
+          messages << "選択された配送日（#{self.delivery_scheduled_date}）が選択可能な配送期間（#{deliverable_dates.first}-#{deliverable_dates.last}）から外れてしまったため再度選択してください。"
+        end
+      end
+      if self.delivery_scheduled_time_start.present? && self.delivery_scheduled_time_end.present?
+        deliverable_times = delivery_schedule.deliverable_times
+        delivery_scheduled_time = DeliverySchedule.concat_times(self.delivery_scheduled_time_start, self.delivery_scheduled_time_end)
+        if deliverable_times.exclude?(delivery_scheduled_time)
+          messages << "選択された配送時間（#{delivery_scheduled_time}）が選択不可になってしまったため再度選択してください。"
+        end
+      end
+    end
+
+    if messages.present?
+      raise ShouldRestartCartError.new(messages.join("\n"))
+    end
+  end
+
   def calc_all
-    self.products_num, self.subtotal = calc_products_num_and_subtotal
+    logger.debug{"ショッピングカートを再計算します。(id: #{self.id})"}
+    self.products_num, self.subtotal = calc_products_and_sum
     self.shipping_cost = calc_shipping_cost
     self.cod_fee = calc_cod_fee
     self.consumption_tax_rate, self.consumption_tax = calc_consumption_tax
     self.total = calc_total
   end
 
-  def calc_products_num_and_subtotal
+  def calc_products_and_sum
     num_and_subtotal = [0, 0]
     self.purchase_products.each do |cart_product|
       unless cart_product.marked_for_destruction?
+        cart_product.name = cart_product.product.name
+        cart_product.price = cart_product.product.price
+        cart_product.total = cart_product.price * cart_product.num
         num_and_subtotal[0] += cart_product.num
         num_and_subtotal[1] += cart_product.total
       end
@@ -128,23 +213,23 @@ class Cart < Purchase
   end
 
   def copy_to_user_shipping_address
-    if self.save_shipping_address
+    if self.save_shipping_address?
       logger.debug{"送付先情報をユーザの送付先情報にコピー"}
       self.user.shipping_address.copy_from(self.shipping_address)
       self.user.shipping_address.save!
     end
   end
 
-  def cleanup
+  def clear_all
     self.purchase_products.destroy_all
-    clear
-    self.state = Cart.states[:initial]
     self.shipping_address.clear
+    clear
     self.save!
   end
 
   def clear
     attrs = Cart.new.attributes
+    attrs[:state] = Cart.states[:initial]
     attrs.delete('id')
     attrs.delete('user_id')
     attrs.delete('lock_version')

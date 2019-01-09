@@ -29,6 +29,7 @@ class ShippingAddress < ApplicationRecord
   end
 
   def clear
+    self.should_be_fixed = false
     self.name = nil
     self.postal_code = nil
     self.prefecture = nil

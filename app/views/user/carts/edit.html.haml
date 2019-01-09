@@ -22,7 +22,7 @@
       - @cart.purchase_products.each do |purchase_product|
         %tr{id: dom_id(purchase_product.product)}
           %td= image_tag purchase_product.product.product_image_url(:thumb), class: 'media-object'
-          %td= purchase_product.product.name
+          %td= purchase_product.name
           %td.text-right= number_to_currency purchase_product.price
           %td.text-right{id: dom_id(purchase_product.product, :num)}
             = render 'num', cart_product: purchase_product
@@ -33,4 +33,5 @@
 
   .form-actions
     = simple_form_for(@cart, url: cart_path, mothod: :put) do |f|
+      = f.input :lock_version, as: :hidden
       = f.button :submit, "#{ShippingAddress.model_name.human}の編集画面に進む", class: 'btn-primary', name: 'fix_products'

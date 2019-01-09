@@ -7,6 +7,18 @@ class User::CartsController < User::ApplicationController
     redirect_to edit_cart_path, alert: "他のパソコン/スマートフォンで#{Cart.model_name.human}の情報が変更されました。再度操作を実施してください。"
   end
 
+  rescue_from ShouldRestartCartError do |error|
+    begin
+      logger.info "ShouldRestartCartError occured: #{ShouldRestartCartError.message}"
+      current_user.cart.state = 'initial'
+      current_user.cart.save!
+    rescue StandardError => e
+      logger.fatal(e.message)
+      logger.fatal(e.backtrace)
+    end
+    redirect_to edit_cart_path, alert: error.message
+  end
+
   def show
   end
 
@@ -27,23 +39,24 @@ class User::CartsController < User::ApplicationController
 
   def update
     if params[:fix_products].present?
-      if @cart.update(state: Cart.states[:products_fixed])
+      if @cart.fix_products(params.require(:cart)[:lock_version])
         redirect_to edit_shipping_address_cart_path
       else
         render :edit # TODO:
       end
 
     elsif params[:fix_shipping_address].present?
-      @cart.attributes = cart_params
-      if @cart.update_shipping_address
+      args = params.require(:cart).permit(
+        :ref_shipping_address, :save_shipping_address, :delivery_scheduled_date, :delivery_scheduled_time, :lock_version,
+        shipping_address_attributes: [:id, :name, :postal_code, :prefecture, :city, :address, :building]).to_unsafe_hash.symbolize_keys
+      if @cart.fix_shipping_address(**args)
         redirect_to cart_path
       else
         render :edit_shipping_address
       end
 
     elsif params[:purchase].present?
-      @cart.attributes = cart_params
-      if @cart.purchase
+      if @cart.purchase(params.require(:cart)[:lock_version])
         redirect_to show_complete_cart_path
       else
         render :show
@@ -59,9 +72,5 @@ class User::CartsController < User::ApplicationController
 
   def set_delivery_schedule
     @delivery_schedule = DeliverySchedule.new
-  end
-
-  def cart_params
-    params.require(:cart).permit(:ref_shipping_address, :save_shipping_address, :delivery_scheduled_date, :delivery_scheduled_time, :lock_version, shipping_address_attributes: [:id, :name, :postal_code, :prefecture, :city, :address, :building])
   end
 end
