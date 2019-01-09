@@ -38,7 +38,8 @@ ActiveRecord::Schema.define(version: 2019_01_02_082007) do
 
   create_table "purchase_products", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "purchase_id", null: false
-    t.bigint "product_id", null: false
+    t.bigint "product_id"
+    t.string "name"
     t.integer "price", null: false
     t.integer "num", default: 1, null: false
     t.integer "total", null: false
@@ -74,8 +75,8 @@ ActiveRecord::Schema.define(version: 2019_01_02_082007) do
   end
 
   create_table "shipping_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "shippable_id", null: false
     t.string "shippable_type", null: false
+    t.bigint "shippable_id", null: false
     t.string "name"
     t.string "postal_code"
     t.string "prefecture"
