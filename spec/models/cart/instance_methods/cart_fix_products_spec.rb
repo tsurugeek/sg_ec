@@ -9,7 +9,7 @@ RSpec.describe Cart, type: :model do
   let(:product1){create(:product, price: 1000)}
 
   describe "#fix_products" do
-    it "turns state to shipping_address_fixed" do
+    it "returns true and turns state to shipping_address_fixed" do
       expect(cart.state).to eq 'initial'
       expect(cart.fix_products(cart.lock_version)).to be true
       expect(cart.state).to eq 'products_fixed'

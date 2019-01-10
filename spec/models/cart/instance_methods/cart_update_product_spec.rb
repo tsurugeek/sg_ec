@@ -15,7 +15,7 @@ RSpec.describe Cart, type: :model do
     end
 
     context "when the cart has the same product as argument's product," do
-      it "doesn't occur validation errors" do
+      it "returns true without validation errors" do
         expect(cart.update_product(cart.lock_version, product1, 5)).to be true
         expect(cart.errors.size).to eq 0
       end
@@ -52,8 +52,8 @@ RSpec.describe Cart, type: :model do
       end
     end
 
-    context "when the cart doesn't has the same product as argument's product," do
-      it "doesn't occur validation errors" do
+    context "when the cart doesn't have the same product as argument's product," do
+      it "returns true without validation errors" do
         expect(cart.update_product(cart.lock_version, product2, 5)).to be true
         expect(cart.errors.size).to eq 0
       end
