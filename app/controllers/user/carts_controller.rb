@@ -35,7 +35,9 @@ class User::CartsController < User::ApplicationController
       if @cart.fix_products(params.require(:cart)[:lock_version])
         redirect_to edit_shipping_address_cart_path
       else
-        render :edit # TODO:
+        # 画面に表示できるようなvalidationエラーは発生していないはず
+        logger.error @cart.joined_messages
+        redirect_to edit_cart_path, alert: "処理を続行できませんでした。しばらくしてから再度実施してください。"
       end
 
     elsif params[:fix_shipping_address].present?
@@ -53,7 +55,9 @@ class User::CartsController < User::ApplicationController
         if @cart.purchase(params.require(:cart)[:lock_version])
           redirect_to show_complete_cart_path
         else
-          render :show
+          # 画面に表示できるようなvalidationエラーは発生していないはず
+          logger.error @cart.joined_messages
+          redirect_to edit_shipping_address_cart_path, alert: "処理を続行できませんでした。しばらくしてから再度実施してください。"
         end
       rescue ShouldRestartCartError => e
         redirect_to edit_cart_path

@@ -7,6 +7,7 @@ class User::CartProductsController < User::ApplicationController
   rescue_from StandardError do |exception|
     respond_to do |format|
       format.js do
+        logger_error e
         flash[:alert] = "処理を続行できませんでした。しばらくしてから再度実施してください。"
         js_redirect_to edit_cart_path
       end
@@ -48,12 +49,9 @@ class User::CartProductsController < User::ApplicationController
       flash.now[:alert] = @cart_product.joined_messages
       render partial: 'shared/messages', formats: :js
     end
-  # rescue StandardError => e
-  #   logger_error e
-  #   flash[:alert] = "数量を更新できませんでした。しばらくしてから再度実施してください。"
-  #   js_redirect_to edit_cart_path
   end
 
+  # for ajax
   def destroy
     if @cart.remove_product(params[:lock_version], @product)
       flash.now[:notice] = I18n.t('messages.destroyed')
@@ -62,10 +60,6 @@ class User::CartProductsController < User::ApplicationController
       flash.now[:alert] = @cart_product.joined_messages
       render partial: 'shared/messages', formats: :js
     end
-  # rescue StandardError => e
-  #   logger_error e
-  #   flash[:alert] = "商品を削除できませんでした。しばらくしてから再度実施してください。"
-  #   js_redirect_to edit_cart_path
   end
 
   private
