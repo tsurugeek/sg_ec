@@ -5,7 +5,8 @@
 - simple_form_opts = {id: dom_id(cart_product.product, :num_form), class: 'form-inline'}
 - simple_form_opts[:style] = 'display: none' unless cart_product.errors[:num].present?
 = simple_form_for(cart_product, url: update_num_product_cart_products_path(cart_product.product), method: :put, remote: true, html: simple_form_opts) do |f|
-  = f.input :num, input_html: {class: 'form-control input-sm form-inline', style: 'width: 60px', id: '', display: 'inline'}, label: false
+  = hidden_field_tag "lock_version", cart_product.purchase.lock_version, data: {lock_version: ''}, id: nil
+  = f.input :num, input_html: {class: 'form-control input-sm form-inline', style: 'width: 60px', id: nil, display: 'inline'}, label: false
   = f.submit "更新"
 
 :coffee

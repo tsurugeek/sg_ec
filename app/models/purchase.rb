@@ -16,9 +16,6 @@ class Purchase < ApplicationRecord
   end
 
   def delivery_scheduled_time= value
-    if value.present?
-      self.delivery_scheduled_time_start, self.delivery_scheduled_time_end = DeliverySchedule.split_times(value)
-    end
+    self.delivery_scheduled_time_start, self.delivery_scheduled_time_end = DeliverySchedule.split_times(value)
   end
-
 end

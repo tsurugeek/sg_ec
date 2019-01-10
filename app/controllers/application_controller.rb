@@ -8,4 +8,11 @@ class ApplicationController < ActionController::Base
     request.get? && is_navigational_format? && !devise_controller? && !request.xhr?
   end
 
+  def logger_error e
+    logger.error "#{e.message}, #{e.backtrace}"
+  end
+
+  def js_redirect_to path
+    render partial: 'shared/redirect', locals: {location: path}, formats: 'js'
+  end
 end

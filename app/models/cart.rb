@@ -9,11 +9,13 @@ class Cart < Purchase
     purchase.create_shipping_address
   end
   before_validation :validate_state_transition
-  before_update :calc_all, if: :initial?
-  before_update :check_external_consistency,   if: :purchased?
-  after_update :copy_to_purchase_history,      if: :purchased?
-  after_update :copy_to_user_shipping_address, if: :purchased?
-  after_update :clear_all,                     if: :purchased?
+  before_update :calc_all,                              if: :initial?
+  # 価格などの外部リソースの変化はlock_versionでチェックできないので購入確定時にチェックする。
+  # しかし、確定するまでの間にもユーザに通知したい seel: #check_external_changes
+  before_update :check_external_changes_without_update, if: :purchased?
+  after_update :copy_to_purchase_history,               if: :purchased?
+  after_update :copy_to_user_shipping_address,          if: :purchased?
+  after_update :clear_all,                              if: :purchased?
 
   def add_product product, num
     self.with_lock do
@@ -37,17 +39,16 @@ class Cart < Purchase
     end
   end
 
-  def update_product product, num
+  def update_product cart_lock_version, product, num
     self.with_lock do
       self.purchase_products.each do |cart_product|
         if cart_product.product == product
-          cart_product.name = product.name
-          cart_product.price = product.price
           cart_product.num = num
           cart_product.total = cart_product.price * cart_product.num
           break
         end
       end
+      self.lock_version = cart_lock_version.to_i
       self.state = Cart.states[:initial]
       self.save
     end
@@ -93,6 +94,63 @@ class Cart < Purchase
     self.save
   end
 
+  def check_external_changes with_update:
+    messages = []
+
+    if self.consumption_tax_rate != ConsumptionTaxRate.current.rate
+      messages << "消費税率が#{self.consumption_tax_rate}から#{ConsumptionTaxRate.current.rate}に変更になっているためショッピングカートをご確認ください。"
+      self.consumption_tax_rate = ConsumptionTaxRate.current.rate if with_update
+    end
+
+    self.purchase_products.each do |purchase_product|
+      if purchase_product.product.blank? || purchase_product.product.hidden?
+        messages << "商品「#{purchase_product.name}」が販売中止になっているためショッピングカートをご確認ください。"
+        purchase_product.mark_for_destruction if with_update
+      else
+        if purchase_product.name != purchase_product.product.name
+          messages << "商品「#{purchase_product.product.name}」の名前が「#{purchase_product.name}」から「#{purchase_product.product.name}」に変更になっているためショッピングカートをご確認ください。"
+          purchase_product.name = purchase_product.product.name if with_update
+        end
+        if purchase_product.price != purchase_product.product.price
+          messages << "商品「#{purchase_product.product.name}」の価格が「#{number_to_currency(purchase_product.price)}」から「#{number_to_currency(purchase_product.product.price)}」に変更になっているためショッピングカートをご確認ください。"
+          purchase_product.price = purchase_product.product.price if with_update
+        end
+      end
+    end
+
+    if self.shipping_address_fixed? || self.purchased?
+      delivery_schedule = DeliverySchedule.new
+      if self.delivery_scheduled_date.present?
+        deliverable_dates = delivery_schedule.deliverable_dates
+        if deliverable_dates.exclude?(self.delivery_scheduled_date)
+          messages << "選択された配送日「#{self.delivery_scheduled_date}」が選択可能な配送期間（#{deliverable_dates.first}-#{deliverable_dates.last}）から外れてしまったため再度選択してください。"
+          self.delivery_scheduled_date = nil if with_update
+        end
+      end
+      if self.delivery_scheduled_time_start.present? && self.delivery_scheduled_time_end.present?
+        deliverable_times = delivery_schedule.deliverable_times
+        delivery_scheduled_time = DeliverySchedule.concat_times(self.delivery_scheduled_time_start, self.delivery_scheduled_time_end)
+        if deliverable_times.exclude?(self.delivery_scheduled_time)
+          messages << "選択された配送時間「#{delivery_scheduled_time}」が選択不可になってしまったため再度選択してください。"
+          self.delivery_scheduled_time = nil if with_update
+        end
+      end
+    end
+
+    if with_update
+      self.initial!
+    end
+
+    if messages.present?
+      raise ShouldRestartCartError.new(messages.join("\n"))
+    end
+  end
+
+  def check_external_changes_without_update
+    check_external_changes(with_update: false)
+  end
+
+
   private
 
   def validate_state_transition
@@ -102,50 +160,6 @@ class Cart < Purchase
       elsif self.purchased? && ['initial', 'products_fixed'].include?(self.state_was)
         raise ShouldRestartCartError.new('送付先情報を保存してから確定してください。')
       end
-    end
-  end
-
-  def check_external_consistency
-    messages = []
-
-    # if !self.initial?
-      if ConsumptionTaxRate.current.rate != self.consumption_tax_rate
-        messages << "消費税率が#{self.consumption_tax_rate}から#{ConsumptionTaxRate.current.rate}に変更になっているためショッピングカートをご確認ください。"
-      end
-
-      self.purchase_products.each do |purchase_product|
-        if purchase_product.product.blank? || purchase_product.product.hidden?
-          messages << "商品「#{purchase_product.name}」が販売中止になっているためショッピングカートをご確認ください。"
-        else
-          if purchase_product.name != purchase_product.product.name
-            messages << "商品「#{purchase_product.product.name}」の名前が#{number_to_currency(purchase_product.name)}から#{number_to_currency(purchase_product.product.name)}に変更になっているためショッピングカートをご確認ください。"
-          end
-          if purchase_product.price != purchase_product.product.price
-            messages << "商品「#{purchase_product.product.name}」の価格が#{number_to_currency(purchase_product.price)}から#{number_to_currency(purchase_product.product.price)}に変更になっているためショッピングカートをご確認ください。"
-          end
-        end
-      end
-    # end
-
-    if self.shipping_address_fixed? || self.purchased?
-      delivery_schedule = DeliverySchedule.new
-      if self.delivery_scheduled_date.present?
-        deliverable_dates = delivery_schedule.deliverable_dates
-        if deliverable_dates.exclude?(self.delivery_scheduled_date)
-          messages << "選択された配送日（#{self.delivery_scheduled_date}）が選択可能な配送期間（#{deliverable_dates.first}-#{deliverable_dates.last}）から外れてしまったため再度選択してください。"
-        end
-      end
-      if self.delivery_scheduled_time_start.present? && self.delivery_scheduled_time_end.present?
-        deliverable_times = delivery_schedule.deliverable_times
-        delivery_scheduled_time = DeliverySchedule.concat_times(self.delivery_scheduled_time_start, self.delivery_scheduled_time_end)
-        if deliverable_times.exclude?(delivery_scheduled_time)
-          messages << "選択された配送時間（#{delivery_scheduled_time}）が選択不可になってしまったため再度選択してください。"
-        end
-      end
-    end
-
-    if messages.present?
-      raise ShouldRestartCartError.new(messages.join("\n"))
     end
   end
 
@@ -162,8 +176,6 @@ class Cart < Purchase
     num_and_subtotal = [0, 0]
     self.purchase_products.each do |cart_product|
       unless cart_product.marked_for_destruction?
-        cart_product.name = cart_product.product.name
-        cart_product.price = cart_product.product.price
         cart_product.total = cart_product.price * cart_product.num
         num_and_subtotal[0] += cart_product.num
         num_and_subtotal[1] += cart_product.total
@@ -238,5 +250,4 @@ class Cart < Purchase
     attrs.delete('updated_at')
     self.attributes = attrs
   end
-
 end

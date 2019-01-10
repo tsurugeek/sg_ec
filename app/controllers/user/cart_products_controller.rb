@@ -16,16 +16,25 @@ class User::CartProductsController < User::ApplicationController
     end
   end
 
+  # for ajax
   def update_num
     if @cart_product.invalid_attribute?(:num)
       render :update_num
-    elsif @cart.update_product(@product, @cart_product.num)
+    elsif @cart.update_product(params[:lock_version], @product, @cart_product.num)
       @cart_product = @cart.purchase_products.find_by(product:  @product)
+      flash.now[:notice] = I18n.t('messages.updated')
       render :update_num
     else
-      flash.now[:alert] = "数量を変更できませんでした。#{Cart.model_name.human}を再表示してから再度実行してください。"
-      render partial: 'shared/message'
+      flash.now[:alert] = @cart_product.joined_messages
+      render partial: 'shared/messages', formats: :js
     end
+  rescue ActiveRecord::StaleObjectError => e
+    flash[:alert] = I18n.t('activerecord.errors.messages.stale_object', record: Cart.model_name.human)
+    js_redirect_to edit_cart_path
+  rescue StandardError => e
+    logger_error e
+    flash[:alert] = "数量を更新できませんでした。しばらくしてから再度実施してください。"
+    js_redirect_to edit_cart_path
   end
 
   def destroy
@@ -44,6 +53,7 @@ class User::CartProductsController < User::ApplicationController
 
     def set_cart_product
       @cart_product = @product.purchase_products.build(cart_product_params)
+      @cart_product.purchase = @cart
     end
 
     def cart_product_params

@@ -4,3 +4,7 @@
 <% end %>
 
 $("#<%= dom_id(@cart_product.product, :num) %>").html('<%= j render('user/carts/num', cart_product: @cart_product) %>');
+
+$("input[data-lock-version]").val(<%= @cart_product.purchase.lock_version %>);
+
+<%= render partial: 'shared/messages', formats: 'js' %>

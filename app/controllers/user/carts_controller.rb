@@ -2,21 +2,10 @@ class User::CartsController < User::ApplicationController
   before_action :authenticate_user!
   before_action :set_cart
   before_action :set_delivery_schedule, only: [:edit_shipping_address, :update]
+  before_action :check_external_changes_with_update, only: [:edit, :edit_shipping_address, :show]
 
   rescue_from ActiveRecord::StaleObjectError do |exception|
-    redirect_to edit_cart_path, alert: "他のパソコン/スマートフォンで#{Cart.model_name.human}の情報が変更されました。再度操作を実施してください。"
-  end
-
-  rescue_from ShouldRestartCartError do |error|
-    begin
-      logger.info "ShouldRestartCartError occured: #{ShouldRestartCartError.message}"
-      current_user.cart.state = 'initial'
-      current_user.cart.save!
-    rescue StandardError => e
-      logger.fatal(e.message)
-      logger.fatal(e.backtrace)
-    end
-    redirect_to edit_cart_path, alert: error.message
+    redirect_to edit_cart_path, alert: I18n.t('activerecord.errors.messages.stale_object', record: Cart.model_name.human)
   end
 
   def show
@@ -56,10 +45,14 @@ class User::CartsController < User::ApplicationController
       end
 
     elsif params[:purchase].present?
-      if @cart.purchase(params.require(:cart)[:lock_version])
-        redirect_to show_complete_cart_path
-      else
-        render :show
+      begin
+        if @cart.purchase(params.require(:cart)[:lock_version])
+          redirect_to show_complete_cart_path
+        else
+          render :show
+        end
+      rescue ShouldRestartCartError => e
+        redirect_to edit_cart_path
       end
     end
   end
@@ -72,5 +65,17 @@ class User::CartsController < User::ApplicationController
 
   def set_delivery_schedule
     @delivery_schedule = DeliverySchedule.new
+  end
+
+  def check_external_changes_with_update
+    @cart.check_external_changes(with_update: true)
+  rescue ShouldRestartCartError => e
+    begin
+      logger.info "ShouldRestartCartError occured: #{e.message}"
+      flash.now[:alert] = e.message
+    rescue StandardError => e
+      logger.fatal(e.message)
+      logger.fatal(e.backtrace)
+    end
   end
 end
