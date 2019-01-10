@@ -24,6 +24,10 @@ class User::CartsController < User::ApplicationController
     if @cart.ref_shipping_address.nil? && current_user.shipping_address.available?
       @cart.ref_shipping_address = true
     end
+    if @cart.ref_shipping_address?
+      # 保存した後、再度この画面に戻ってくると表示されてしまうので消しておく
+      @cart.shipping_address.clear
+    end
   end
 
   def update
