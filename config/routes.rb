@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   scope module: :user do
     get '/', to: 'products#index', as: :user_root
     resources :products, only: [:index] do
-      resource :cart_products, only: [:new, :create, :destroy] do
+      resource :cart_product, only: [:new, :create, :destroy] do
         put :update_num
       end
     end

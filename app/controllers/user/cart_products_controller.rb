@@ -4,6 +4,26 @@ class User::CartProductsController < User::ApplicationController
   before_action :set_cart, except: [:new]
   before_action :set_cart_product, only: [:create, :update_num]
 
+  rescue_from StandardError do |exception|
+    respond_to do |format|
+      format.js do
+        flash[:alert] = "処理を続行できませんでした。しばらくしてから再度実施してください。"
+        js_redirect_to edit_cart_path
+      end
+      format.html { raise exception}
+    end
+  end
+
+  rescue_from ActiveRecord::StaleObjectError do |exception|
+    respond_to do |format|
+      format.js do
+        flash[:alert] = I18n.t('activerecord.errors.messages.stale_object', record: Cart.model_name.human)
+        js_redirect_to edit_cart_path
+      end
+      format.html { raise exception}
+    end
+  end
+
   def new
     @cart_product = @product.purchase_products.build
   end
@@ -28,18 +48,24 @@ class User::CartProductsController < User::ApplicationController
       flash.now[:alert] = @cart_product.joined_messages
       render partial: 'shared/messages', formats: :js
     end
-  rescue ActiveRecord::StaleObjectError => e
-    flash[:alert] = I18n.t('activerecord.errors.messages.stale_object', record: Cart.model_name.human)
-    js_redirect_to edit_cart_path
-  rescue StandardError => e
-    logger_error e
-    flash[:alert] = "数量を更新できませんでした。しばらくしてから再度実施してください。"
-    js_redirect_to edit_cart_path
+  # rescue StandardError => e
+  #   logger_error e
+  #   flash[:alert] = "数量を更新できませんでした。しばらくしてから再度実施してください。"
+  #   js_redirect_to edit_cart_path
   end
 
   def destroy
-    @cart.remove_product(@product)
-    redirect_to edit_cart_path, notice: "#{Cart.model_name.human}から削除しました"
+    if @cart.remove_product(params[:lock_version], @product)
+      flash.now[:notice] = I18n.t('messages.destroyed')
+    else
+      # ありえないと思うけど、念のため
+      flash.now[:alert] = @cart_product.joined_messages
+      render partial: 'shared/messages', formats: :js
+    end
+  # rescue StandardError => e
+  #   logger_error e
+  #   flash[:alert] = "商品を削除できませんでした。しばらくしてから再度実施してください。"
+  #   js_redirect_to edit_cart_path
   end
 
   private

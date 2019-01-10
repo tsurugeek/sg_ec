@@ -54,11 +54,12 @@ class Cart < Purchase
     end
   end
 
-  def remove_product product
+  def remove_product cart_lock_version, product
     self.with_lock do
       self.purchase_products.each do |cart_product|
         cart_product.mark_for_destruction if cart_product.product == product
       end
+      self.lock_version = cart_lock_version.to_i
       self.state = Cart.states[:initial]
       self.save
     end
