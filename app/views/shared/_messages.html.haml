@@ -1,0 +1,7 @@
+.alert{class: "alert-#{alert} alert-dismissible"}
+  %button.close{type: "button", data: {dismiss: "alert"}, aria: {label: "Close"}}
+    %span{aria: {hidden: "true"}} &times;
+  - messages.split("\n").each do |message|
+    %div
+      %span.glyphicon.glyphicon-exclamation-sign{aria: {hidden: true}}
+      = message

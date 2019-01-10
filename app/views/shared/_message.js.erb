@@ -1,7 +1,0 @@
-<% if notice.present? %>
-  $(".alert.alert-info").remove();
-  $("main.container").prepend('<%= j render('shared/message', alert: :info, message: notice) %>');
-<% elsif alert.present? %>
-  $(".alert.alert-danger").remove();
-  $("main.container").prepend('<%= j render('shared/message.html', alert: :danger, message: alert) %>');
-<% end %>

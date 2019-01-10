@@ -21,11 +21,7 @@
               %li= link_to "ログアウト", destroy_admin_session_path, class: "navbar-link", method: 'delete'
     %main.container{role: "main", class: ("devise_main" if devise_controller?)}
       - if notice.present?
-        .alert.alert-info
-          %span.glyphicon.glyphicon-exclamation-sign{aria: {hidden: true}}
-          = notice
+        = render "shared/messages", alert: :info, messages: notice
       - if alert.present?
-        .alert.alert-danger
-          %span.glyphicon.glyphicon-exclamation-sign{aria: {hidden: true}}
-          = alert
+        = render "shared/messages", alert: :danger, messages: alert
       = yield
