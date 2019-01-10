@@ -144,13 +144,6 @@ RSpec.describe Cart, type: :model do
       end
     end
 
-    it "raises ShouldRestartCartError when the product has been destroyed" do
-      cart # <- 削除の前にロードしたいから
-      product1.destroy!
-      cart.reload
-      expect{ cart.purchase(cart.lock_version) }.to raise_error(ShouldRestartCartError)
-    end
-
     it "raises ShouldRestartCartError when the product has been hidden" do
       cart # <- 変更前にロードしたいから
       product1.hidden = true

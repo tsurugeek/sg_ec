@@ -82,4 +82,23 @@ RSpec.describe Product, type: :model do
     end
   end
 
+  it "ショッピングカートや購入履歴に関連づいていない場合は削除できる" do
+    expect(product.destroy).not_to be false
+  end
+
+  it "既にショッピングカートや購入履歴に関連づいている場合は削除できない" do
+    user = create(:user_with_valid_user_shipping_address)
+    user.cart.add_product(product, 1)
+    user.cart.fix_products(user.cart.lock_version)
+    user.cart.fix_shipping_address(
+      ref_shipping_address: false,
+      save_shipping_address: false,
+      delivery_scheduled_date: DeliverySchedule.new.deliverable_dates.first,
+      delivery_scheduled_time: DeliverySchedule.new.deliverable_times.first,
+      lock_version: user.cart.lock_version,
+      shipping_address_attributes: attributes_for(:shipping_address).merge(id: user.cart.shipping_address.id)
+    )
+    expect{ product.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
+  end
+
 end

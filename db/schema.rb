@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2019_01_02_082007) do
 
   create_table "purchase_products", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "purchase_id", null: false
-    t.bigint "product_id"
+    t.bigint "product_id", null: false
     t.string "name"
     t.integer "price", null: false
     t.integer "num", default: 1, null: false
@@ -105,4 +105,6 @@ ActiveRecord::Schema.define(version: 2019_01_02_082007) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "purchase_products", "products"
+  add_foreign_key "purchase_products", "purchases"
 end

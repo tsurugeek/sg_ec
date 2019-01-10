@@ -1,7 +1,7 @@
 class Product < ApplicationRecord
   mount_uploader :product_image, ProductImageUploader
 
-  has_many :purchase_products, dependent: :nullify
+  has_many :purchase_products, dependent: :restrict_with_exception
   has_many :purchases, through: :purchase_products
 
   validates :name, presence: true,
