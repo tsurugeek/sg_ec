@@ -138,11 +138,8 @@ class Cart < Purchase
       end
     end
 
-    if with_update
-      self.initial!
-    end
-
     if messages.present?
+      self.initial! if with_update
       raise ShouldRestartCartError.new(messages.join("\n"))
     end
   end
