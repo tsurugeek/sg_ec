@@ -39,10 +39,10 @@ RSpec.describe Cart, type: :model do
     end
 
     it "raises ShouldRestartCartError when the state is initial" do
+      cart.initial!
       args[:ref_shipping_address] = true
       args[:lock_version] = cart.lock_version
       args[:shipping_address_attributes][:id] = cart.shipping_address.id
-      cart.initial!
       expect{ cart.fix_shipping_address(args) }.to raise_error(ShouldRestartCartError)
     end
 

@@ -8,11 +8,12 @@ class Cart < Purchase
   after_create do |purchase|
     purchase.create_shipping_address
   end
-  before_update :check_consistency
+  before_validation :validate_state_transition
   before_update :calc_all, if: :initial?
-  after_update :copy_to_purchase_history, if: :purchased?
+  before_update :check_external_consistency,   if: :purchased?
+  after_update :copy_to_purchase_history,      if: :purchased?
   after_update :copy_to_user_shipping_address, if: :purchased?
-  after_update :clear_all, if: :purchased?
+  after_update :clear_all,                     if: :purchased?
 
   def add_product product, num
     self.with_lock do
@@ -94,20 +95,20 @@ class Cart < Purchase
 
   private
 
-  def check_consistency
-    messages = []
-
+  def validate_state_transition
     if self.state_changed?
-      if self.shipping_address_fixed? &&  self.state_was == 'initial'
-        messages << 'ショッピングカート内の商品を保存してから送付先情報を保存してください。'
-      end
-
-      if self.purchased? && ['initial', 'products_fixed'].include?(self.state_was)
-        messages << '送付先情報を保存してから確定してください。'
+      if self.shipping_address_fixed? && self.state_was == 'initial'
+        raise ShouldRestartCartError.new('ショッピングカート内の商品を確認してから送付先情報を保存してください。')
+      elsif self.purchased? && ['initial', 'products_fixed'].include?(self.state_was)
+        raise ShouldRestartCartError.new('送付先情報を保存してから確定してください。')
       end
     end
+  end
 
-    if !self.initial?
+  def check_external_consistency
+    messages = []
+
+    # if !self.initial?
       if ConsumptionTaxRate.current.rate != self.consumption_tax_rate
         messages << "消費税率が#{self.consumption_tax_rate}から#{ConsumptionTaxRate.current.rate}に変更になっているためショッピングカートをご確認ください。"
       end
@@ -124,7 +125,7 @@ class Cart < Purchase
           end
         end
       end
-    end
+    # end
 
     if self.shipping_address_fixed? || self.purchased?
       delivery_schedule = DeliverySchedule.new
