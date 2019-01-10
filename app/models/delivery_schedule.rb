@@ -6,7 +6,11 @@ class DeliverySchedule
   TIME_SEPARATOR = '-'
 
   def self.split_times times
-    times.split(TIME_SEPARATOR)
+    if times.present?
+      times.split(TIME_SEPARATOR)
+    else
+      [nil, nil]
+    end
   end
 
   def self.concat_times time1, time2
