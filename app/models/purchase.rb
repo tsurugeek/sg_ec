@@ -7,9 +7,6 @@ class Purchase < ApplicationRecord
   accepts_nested_attributes_for :shipping_address
   accepts_nested_attributes_for :purchase_products
 
-  # attribute :delivery_scheduled_time, :string
-
-
   def delivery_scheduled_time
     if self.delivery_scheduled_time_start.present? && self.delivery_scheduled_time_end.present?
       DeliverySchedule.concat_times(self.delivery_scheduled_time_start, self.delivery_scheduled_time_end)
