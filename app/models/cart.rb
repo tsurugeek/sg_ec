@@ -40,6 +40,7 @@ class Cart < Purchase
   end
 
   def update_product cart_lock_version, product, num
+    self.reload
     self.purchase_products.each do |cart_product|
       if cart_product.product == product
         cart_product.num = num
@@ -53,6 +54,7 @@ class Cart < Purchase
   end
 
   def remove_product cart_lock_version, product
+    self.reload
     self.purchase_products.each do |cart_product|
       cart_product.mark_for_destruction if cart_product.product == product
     end
@@ -62,11 +64,13 @@ class Cart < Purchase
   end
 
   def fix_products lock_version
+    self.reload
     self.lock_version = lock_version
     self.update(state: Cart.states[:products_fixed])
   end
 
   def fix_shipping_address ref_shipping_address: false, save_shipping_address:, delivery_scheduled_date:, delivery_scheduled_time:, lock_version:, shipping_address_attributes:
+    self.reload
     cart_attributes = {
       ref_shipping_address:    ref_shipping_address,
       save_shipping_address:   save_shipping_address,
@@ -86,6 +90,7 @@ class Cart < Purchase
   end
 
   def purchase lock_version
+    self.reload
     self.lock_version = lock_version
     self.state = Cart.states[:purchased]
     self.save
