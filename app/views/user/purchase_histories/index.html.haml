@@ -1,7 +1,5 @@
 %h1= "#{PurchaseHistory.model_name.human}の一覧"
 
-= paginate @purchase_histories
-
 %table.table-striped.table-bordered.table-hover{id: 'purchase_histories', style: 'width:100%'}
   %caption.index-page-info
     = page_entries_info @purchase_histories
@@ -23,4 +21,5 @@
         %td.text-right= number_to_currency purchase_history.total
         %td= link_to I18n.t('links.show'), purchase_history
 
-%br
+.row.text-center
+  = paginate @purchase_histories
