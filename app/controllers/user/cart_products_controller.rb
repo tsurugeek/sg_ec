@@ -7,7 +7,7 @@ class User::CartProductsController < User::ApplicationController
   rescue_from StandardError do |exception|
     respond_to do |format|
       format.js do
-        logger_error e
+        logger_error exception
         flash[:alert] = "処理を続行できませんでした。しばらくしてから再度実施してください。"
         js_redirect_to edit_cart_path
       end
