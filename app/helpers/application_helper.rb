@@ -7,4 +7,8 @@ module ApplicationHelper
       concat li.span("(current)", class: "sr-only") if is_active
     end
   end
+
+  def referer
+    request.headers[:HTTP_TURBOLINKS_REFERRER]
+  end
 end

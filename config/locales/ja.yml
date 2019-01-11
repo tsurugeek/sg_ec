@@ -68,6 +68,7 @@ ja:
       purchase_product:
         purchase: "購入"
         product: "商品"
+        name: "商品名"
         price: "価格"
         num: "数量"
         total: "合計"

@@ -17,6 +17,8 @@
             = nav_item('お買い物', products_path, ['products', 'cart_products'])
           %ul.nav.navbar-nav
             = nav_item(Cart.model_name.human, edit_cart_path, 'carts')
+          %ul.nav.navbar-nav
+            = nav_item(PurchaseHistory.model_name.human, purchase_histories_path, 'purchase_histories')
 
           %ul.nav.navbar-nav.navbar-right
             - if user_signed_in?

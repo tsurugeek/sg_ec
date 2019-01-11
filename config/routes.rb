@@ -40,7 +40,7 @@ Rails.application.routes.draw do
       put 'purchase'
       get 'show_complete'
     end
-    resources :purchases, only: [:index, :show]
+    resources :purchase_histories, only: [:index, :show]
   end
 
 

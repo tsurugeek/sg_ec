@@ -1,0 +1,44 @@
+%h1= "#{PurchaseHistory.model_name.human}"
+
+%table.table-striped.table-hover
+  %thead
+    %tr
+      %th{style: "width: 10%"}= PurchaseProduct.human_attribute_name(:product)
+      %th{style: "width: 35%"}
+      %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:price)
+      %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:num)
+      %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:total)
+      %th{style: "width: 10%"}
+
+  %tbody
+    - @purchase_history.purchase_products.each do |purchase_product|
+      %tr
+        %td= image_tag purchase_product.product.product_image_url(:thumb), class: 'media-object'
+        %td= purchase_product.name
+        %td.text-right= number_to_currency purchase_product.price
+        %td.text-right= number_with_delimiter purchase_product.num
+        %td.text-right= number_to_currency purchase_product.total
+  %tfoot{id: 'total'}
+    %tr
+      %td.text-right{colspan: 4}= PurchaseHistory.human_attribute_name(:subtotal)
+      %td.text-right= number_to_currency @purchase_history.subtotal
+    %tr
+      %td.text-right{colspan: 4}= PurchaseHistory.human_attribute_name(:shipping_cost)
+      %td.text-right= number_to_currency @purchase_history.shipping_cost
+    %tr
+      %td.text-right{colspan: 4}= PurchaseHistory.human_attribute_name(:cod_fee)
+      %td.text-right= number_to_currency @purchase_history.cod_fee
+    %tr
+      %td.text-right{colspan: 4}= "#{PurchaseHistory.human_attribute_name(:consumption_tax)}(#{@purchase_history.consumption_tax_rate}%)"
+      %td.text-right= number_to_currency @purchase_history.consumption_tax
+    %tr
+      %td.text-right{colspan: 4}= PurchaseHistory.human_attribute_name(:total)
+      %td.text-right= number_to_currency @purchase_history.total
+
+%h2= "#{ShippingAddress.model_name.human}"
+= render 'shared/address', shipping_address: @purchase_history.shipping_address
+
+%h2= "#{DeliverySchedule.model_name.human}"
+= render 'shared/delivery_schedule', cart: @purchase_history
+
+= link_to I18n.t('links.back'), referer || purchase_histories_path
