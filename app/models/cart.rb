@@ -100,7 +100,7 @@ class Cart < Purchase
   def check_external_changes with_update:
     messages = []
 
-    if self.consumption_tax_rate != ConsumptionTaxRate.current.rate
+    if self.consumption_tax_rate.present? && self.consumption_tax_rate != ConsumptionTaxRate.current.rate
       messages << "消費税率が#{self.consumption_tax_rate}から#{ConsumptionTaxRate.current.rate}に変更になっているためショッピングカートをご確認ください。"
       self.consumption_tax_rate = ConsumptionTaxRate.current.rate if with_update
     end
