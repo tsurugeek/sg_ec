@@ -12,7 +12,7 @@ require 'rails_helper'
     click_link 'ログイン'
     fill_in with: user.email, id: 'user_email'
     fill_in with: "hogehoge", id: 'user_password'
-    click_on 'Log in' # TODO: 日本語化を忘れている
+    click_button 'ログイン'
 
     expect(page).to have_current_path(user_root_path)
     expect(page).to have_content 'ログインしました'
