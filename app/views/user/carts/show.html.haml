@@ -23,7 +23,7 @@
         %td= image_tag purchase_product.product.product_image_url(:thumb), class: 'media-object'
         %td= purchase_product.name
         %td.text-right= number_to_currency purchase_product.price
-        %td.text-right= number_to_currency purchase_product.num
+        %td.text-right= number_with_delimiter purchase_product.num
         %td.text-right= number_to_currency purchase_product.total
   = render 'total', cart: @cart
 
