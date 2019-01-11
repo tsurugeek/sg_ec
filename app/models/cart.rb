@@ -18,7 +18,8 @@ class Cart < Purchase
   after_update :clear_all,                              if: :purchased?
 
   def add_product product, num
-    self.with_lock do
+    # 追加時はショッピングカートのlock_versionが何であっても別に良い
+    with_optimistic_retry(true) do
       catch(:loop_end) do
         self.purchase_products.each do |cart_product|
           if cart_product.product == product

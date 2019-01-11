@@ -128,5 +128,14 @@ RSpec.describe Cart, type: :model do
         end
       end
     end
+    it "succeeds without a latest lock_version" do
+      same_cart = Cart.find(cart.id)
+      same_cart.touch
+      expect(cart.lock_version).to be < same_cart.lock_version
+
+      expect(cart.add_product(product1, 5)).to be true
+      expect(cart.errors.size).to eq 0
+      expect(cart.lock_version).to be > same_cart.lock_version
+    end
   end
 end
