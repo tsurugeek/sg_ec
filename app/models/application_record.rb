@@ -1,6 +1,8 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
+  max_paginates_per 100
+
   # 特定属性のみvalidateする
   def valid_attribute? attribute
     self.class._validators[attribute].each do |validator|
