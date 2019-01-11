@@ -40,29 +40,25 @@ class Cart < Purchase
   end
 
   def update_product cart_lock_version, product, num
-    self.with_lock do
-      self.purchase_products.each do |cart_product|
-        if cart_product.product == product
-          cart_product.num = num
-          cart_product.total = cart_product.price * cart_product.num
-          break
-        end
+    self.purchase_products.each do |cart_product|
+      if cart_product.product == product
+        cart_product.num = num
+        cart_product.total = cart_product.price * cart_product.num
+        break
       end
-      self.lock_version = cart_lock_version.to_i
-      self.state = Cart.states[:initial]
-      self.save
     end
+    self.lock_version = cart_lock_version.to_i
+    self.state = Cart.states[:initial]
+    self.save
   end
 
   def remove_product cart_lock_version, product
-    self.with_lock do
-      self.purchase_products.each do |cart_product|
-        cart_product.mark_for_destruction if cart_product.product == product
-      end
-      self.lock_version = cart_lock_version.to_i
-      self.state = Cart.states[:initial]
-      self.save
+    self.purchase_products.each do |cart_product|
+      cart_product.mark_for_destruction if cart_product.product == product
     end
+    self.lock_version = cart_lock_version.to_i
+    self.state = Cart.states[:initial]
+    self.save
   end
 
   def fix_products lock_version
