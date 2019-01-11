@@ -3,9 +3,7 @@ FactoryBot.define do
     sequence :email do |n|
       "user_#{n}@example.com"
     end
-    sequence :password do |n|
-      "password_#{n}"
-    end
+    password {"hogehoge"}
     confirmed_at {Time.now}
 
     trait :with_valid_user_shipping_address do
