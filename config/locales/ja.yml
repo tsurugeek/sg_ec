@@ -27,8 +27,18 @@ ja:
       purchase: "購入履歴"
       purchase_product: "商品"
     attributes:
+      admin:
+        email: "E-mail"
+        password: "パスワード"
+        password_confirmation: "パスワード確認用"
+        remember_me: "ログイン状態を維持する"
+        reset_password_sent_at: "パスワードリセットメール送信日時"
+        confirmed_at: "E-mail確認日時"
       user:
         email: "E-mail"
+        password: "パスワード"
+        password_confirmation: "パスワード確認用"
+        remember_me: "ログイン状態を維持する"
         reset_password_sent_at: "パスワードリセットメール送信日時"
         confirmed_at: "E-mail確認日時"
       shipping_address:

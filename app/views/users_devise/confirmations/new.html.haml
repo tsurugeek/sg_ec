@@ -1,4 +1,4 @@
-%h2 Resend confirmation instructions
+%h2 メールアドレス確認用メールの再送信
 = simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f|
   = f.error_notification
   = f.full_error :confirmation_token
@@ -9,5 +9,5 @@
       value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email),
       input_html: { autocomplete: "email" }
   .form-actions
-    = f.button :submit, "Resend confirmation instructions"
+    = f.button :submit, "メールの再送信", class: 'btn btn-primary '
 = render "users_devise/shared/links"
