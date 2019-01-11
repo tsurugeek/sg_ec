@@ -26,8 +26,6 @@
             - else
               %li= link_to "ログイン", new_user_session_path, class: "navbar-link"
     %main.container{role: "main", class: ("devise_main" if devise_controller?)}
-      - if notice.present?
-        = render "shared/messages", alert: :info, messages: notice
-      - if alert.present?
-        = render "shared/messages", alert: :danger, messages: alert
+      = render "shared/messages", alert: :info, messages: notice
+      = render "shared/messages", alert: :danger, messages: alert
       = yield
