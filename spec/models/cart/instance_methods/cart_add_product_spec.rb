@@ -16,11 +16,13 @@ RSpec.describe Cart, type: :model do
 
       it "creates a new cart product" do
         expect(cart.add_product(product1, 5)).to be true
-        expect(cart.products.size).to eq 1
+        cart.reload
+        expect(cart.purchase_products.size).to eq 1
       end
 
       it "calculates purchase product attributes" do
         expect(cart.add_product(product1, 5)).to be true
+        cart.reload
         expect(cart.purchase_products.first.product_id).to eq product1.id
         expect(cart.purchase_products.first.name)      .to eq product1.name
         expect(cart.purchase_products.first.price)     .to eq product1.price
@@ -30,6 +32,7 @@ RSpec.describe Cart, type: :model do
 
       it "calculates cart attributes" do
         expect(cart.add_product(product1, 5)).to be true
+        cart.reload
         expect(cart.subtotal)            .to eq 5000
         expect(cart.products_num)        .to eq 5
         expect(cart.shipping_cost)       .to eq 600
@@ -52,6 +55,7 @@ RSpec.describe Cart, type: :model do
 
       it "creates a new cart product" do
         expect(cart.add_product(product2, 3)).to be true
+        cart.reload
         expect(cart.products.size).to eq 2
       end
 
@@ -67,6 +71,7 @@ RSpec.describe Cart, type: :model do
 
       it "calculates cart attributes" do
         expect(cart.add_product(product2, 3)).to be true
+        cart.reload
         expect(cart.subtotal)            .to eq (5000 + 6000)
         expect(cart.products_num)        .to eq (5 + 3)
         expect(cart.shipping_cost)       .to eq 600 * 2
@@ -89,11 +94,13 @@ RSpec.describe Cart, type: :model do
 
       it "doesn't create a new cart product" do
         expect(cart.add_product(product1, 3)).to be true
+        cart.reload
         expect(cart.products.size).to eq 1
       end
 
       it "calculates purchase product attributes" do
         expect(cart.add_product(product1, 3)).to be true
+        cart.reload
         expect(cart.purchase_products.first.product_id).to eq product1.id
         expect(cart.purchase_products.first.name)      .to eq product1.name
         expect(cart.purchase_products.first.price)     .to eq product1.price
@@ -103,6 +110,7 @@ RSpec.describe Cart, type: :model do
 
       it "calculates cart attributes" do
         expect(cart.add_product(product1, 3)).to be true
+        cart.reload
         expect(cart.subtotal)            .to eq 8000
         expect(cart.products_num)        .to eq (5 + 3)
         expect(cart.shipping_cost)       .to eq 600 * 2

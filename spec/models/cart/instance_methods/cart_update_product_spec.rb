@@ -22,11 +22,13 @@ RSpec.describe Cart, type: :model do
 
       it "updates a num attribute of the purhcase product" do
         expect(cart.update_product(cart.lock_version, product1, 5)).to be true
+        cart.reload
         expect(cart.purchase_products.first.num).to eq 5
       end
 
       it "calculates purchase product num and total attributes" do
         expect(cart.update_product(cart.lock_version, product1, 5)).to be true
+        cart.reload
         expect(cart.purchase_products.first.product_id).to eq product1.id
         expect(cart.purchase_products.first.num)       .to eq 5
         expect(cart.purchase_products.first.total)     .to eq 5000
@@ -34,6 +36,7 @@ RSpec.describe Cart, type: :model do
 
       it "calculates cart attributes" do
         expect(cart.update_product(cart.lock_version, product1, 5)).to be true
+        cart.reload
         expect(cart.subtotal)            .to eq 5000
         expect(cart.products_num)        .to eq 5
         expect(cart.shipping_cost)       .to eq 600
@@ -47,6 +50,7 @@ RSpec.describe Cart, type: :model do
         it "updates nothing with validation errors" do
           expect(cart.update_product(cart.lock_version, product1, 0)).to be false
           expect(cart.errors['purchase_products.num'].size).to be > 0
+          cart.reload
           expect(cart.products_num).to eq 1
         end
       end
@@ -60,12 +64,14 @@ RSpec.describe Cart, type: :model do
 
       it "doesn't updates a num attribute of the purchase product" do
         expect(cart.update_product(cart.lock_version, product2, 5)).to be true
+        cart.reload
         expect(cart.purchase_products.size).to eq 1
       end
 
       it "calculates cart attributes" do
         cart_old = cart.dup
         expect(cart.update_product(cart.lock_version, product2, 5)).to be true
+        cart.reload
         expect(cart.products_num)        .to eq cart_old.products_num
         expect(cart.subtotal)            .to eq cart_old.subtotal
         expect(cart.products_num)        .to eq cart_old.products_num

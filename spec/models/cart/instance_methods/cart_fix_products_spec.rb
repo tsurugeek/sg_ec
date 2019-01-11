@@ -12,6 +12,7 @@ RSpec.describe Cart, type: :model do
     it "returns true and turns state to shipping_address_fixed" do
       expect(cart.state).to eq 'initial'
       expect(cart.fix_products(cart.lock_version)).to be true
+      cart.reload
       expect(cart.state).to eq 'products_fixed'
     end
 

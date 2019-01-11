@@ -28,6 +28,7 @@ RSpec.describe Cart, type: :model do
       args[:shipping_address_attributes][:id] = cart.shipping_address.id
       expect(cart.state).to eq 'products_fixed'
       expect(cart.fix_shipping_address(args)).to be true
+      cart.reload
       expect(cart.state).to eq 'shipping_address_fixed'
     end
 
@@ -56,6 +57,7 @@ RSpec.describe Cart, type: :model do
 
             expect(cart.fix_shipping_address(args)).to be true
             expect(cart.errors.size).to eq 0
+            cart.reload
             expect(cart.shipping_address.name).to        eq cart.user.shipping_address.name
             expect(cart.shipping_address.postal_code).to eq cart.user.shipping_address.postal_code
             expect(cart.shipping_address.prefecture).to  eq cart.user.shipping_address.prefecture
@@ -73,6 +75,7 @@ RSpec.describe Cart, type: :model do
 
             expect(cart.fix_shipping_address(args)).to be true
             expect(cart.errors.size).to eq 0
+            cart.reload
             expect(cart.shipping_address.name).to        eq args[:shipping_address_attributes][:name]
             expect(cart.shipping_address.postal_code).to eq args[:shipping_address_attributes][:postal_code]
             expect(cart.shipping_address.prefecture).to  eq args[:shipping_address_attributes][:prefecture]
@@ -93,6 +96,7 @@ RSpec.describe Cart, type: :model do
 
             expect(cart.fix_shipping_address(args)).to be true
             expect(cart.errors.size).to eq 0
+            cart.reload
             expect(cart.shipping_address.name).to        eq cart.user.shipping_address.name
             expect(cart.shipping_address.postal_code).to eq cart.user.shipping_address.postal_code
             expect(cart.shipping_address.prefecture).to  eq cart.user.shipping_address.prefecture
@@ -139,6 +143,7 @@ RSpec.describe Cart, type: :model do
 
             expect(cart.fix_shipping_address(args)).to be true
             expect(cart.errors.size).to eq 0
+            cart.reload
             expect(cart.shipping_address.name).to        eq args[:shipping_address_attributes][:name]
             expect(cart.shipping_address.postal_code).to eq args[:shipping_address_attributes][:postal_code]
             expect(cart.shipping_address.prefecture).to  eq args[:shipping_address_attributes][:prefecture]

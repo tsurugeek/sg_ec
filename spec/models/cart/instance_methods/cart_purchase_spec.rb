@@ -26,6 +26,7 @@ RSpec.describe Cart, type: :model do
       old_cart_shipping_address = cart.shipping_address.dup
 
       expect(cart.purchase(cart.lock_version)).to be true
+      cart.reload
       expect(cart.user.shipping_address.name)       .to eq old_cart_shipping_address.name
       expect(cart.user.shipping_address.postal_code).to eq old_cart_shipping_address.postal_code
       expect(cart.user.shipping_address.prefecture) .to eq old_cart_shipping_address.prefecture
@@ -41,6 +42,7 @@ RSpec.describe Cart, type: :model do
       old_user_shipping_address = cart.user.shipping_address.dup
 
       expect(cart.purchase(cart.lock_version)).to be true
+      cart.reload
       expect(cart.user.shipping_address.name)       .not_to eq old_cart_shipping_address.name
       expect(cart.user.shipping_address.postal_code).not_to eq old_cart_shipping_address.postal_code
       expect(cart.user.shipping_address.prefecture) .not_to eq old_cart_shipping_address.prefecture
@@ -57,6 +59,7 @@ RSpec.describe Cart, type: :model do
 
     it "turns state to initial" do
       expect(cart.purchase(cart.lock_version)).to be true
+      cart.reload
       expect(cart.state).to eq 'initial'
     end
 
@@ -66,6 +69,7 @@ RSpec.describe Cart, type: :model do
       old_cart_shipping_address = cart.shipping_address.dup
 
       expect { cart.purchase(cart.lock_version) }.to change { Purchase.count }.by(1)
+      cart.reload
 
       expect(PurchaseHistory.last.id                           ).not_to eq old_cart.id
       expect(PurchaseHistory.last.user_id                      ).to eq old_cart.user_id

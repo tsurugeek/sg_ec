@@ -22,11 +22,13 @@ RSpec.describe Cart, type: :model do
 
       it "destroys the purhcase product" do
         expect(cart.remove_product(cart.lock_version, product1)).to be true
+        cart.reload
         expect(cart.purchase_products.size).to eq 0
       end
 
       it "calculates cart attributes" do
         expect(cart.remove_product(cart.lock_version, product1)).to be true
+        cart.reload
         expect(cart.products_num)        .to eq 0
         expect(cart.total)               .to eq 0
       end
@@ -40,11 +42,13 @@ RSpec.describe Cart, type: :model do
 
       it "doesn't destroy the purchase product" do
         expect(cart.remove_product(cart.lock_version, product2)).to be true
+        cart.reload
         expect(cart.purchase_products.size).to eq 1
       end
 
       it "does nothing for the existed purchase product" do
         expect(cart.remove_product(cart.lock_version, product2)).to be true
+        cart.reload
         expect(cart.purchase_products.first.product_id).to eq product1.id
         expect(cart.purchase_products.first.name)      .to eq product1.name
         expect(cart.purchase_products.first.price)     .to eq product1.price
@@ -54,6 +58,7 @@ RSpec.describe Cart, type: :model do
 
       it "does nothing for cart" do
         expect(cart.remove_product(cart.lock_version, product2)).to be true
+        cart.reload
         expect(cart.subtotal)            .to eq 5000
         expect(cart.products_num)        .to eq 5
         expect(cart.shipping_cost)       .to eq 600
