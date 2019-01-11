@@ -1,4 +1,7 @@
 .row
+  .index-page-info
+    = page_entries_info @products
+.row
   - @products.each do |product|
     .col-sm-6.col-md-4
       .thumbnail
@@ -6,3 +9,6 @@
         .caption
           %h3
             = link_to product.name, new_product_cart_product_path(product)
+
+.row.text-center
+  = paginate @products
