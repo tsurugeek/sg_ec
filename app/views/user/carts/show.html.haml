@@ -1,21 +1,14 @@
 %h1= "#{Cart.model_name.human}の確認"
 
 %table.table-striped.table-hover
-  %colgroup
-    %col.col-md-2
-    %col.col-md-3
-    %col.col-md-2
-    %col.col-md-2
-    %col.col-md-2
-    %col.col-md-1
   %thead
     %tr
-      %th= PurchaseProduct.human_attribute_name(:product)
-      %th
-      %th.text-right= PurchaseProduct.human_attribute_name(:price)
-      %th.text-right= PurchaseProduct.human_attribute_name(:num)
-      %th.text-right= PurchaseProduct.human_attribute_name(:total)
-      %th
+      %th{style: "width: 10%"}= PurchaseProduct.human_attribute_name(:product)
+      %th{style: "width: 35%"}
+      %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:price)
+      %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:num)
+      %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:total)
+      %th{style: "width: 10%"}
 
   %tbody
     - @cart.purchase_products.each do |purchase_product|
