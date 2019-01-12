@@ -42,7 +42,7 @@ class DeliverySchedule
   end
 
   def deliverable? date
-    self.business_dates.include?(date)
+    self.deliverable_dates.include?(date)
   end
 
   def deliverable_splitted_times
