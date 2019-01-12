@@ -27,7 +27,7 @@
 = render 'shared/delivery_schedule', cart: @cart
 
 .form-actions
-  = simple_form_for(@cart, url: cart_path) do |f|
+  = simple_form_for(@cart, url: purchase_cart_path, method: :put) do |f|
     = f.input :lock_version, as: :hidden
     = link_to "戻る", edit_shipping_address_cart_path, class: 'btn btn-primary'
     = f.button :submit, "確定", class: 'btn-primary', name: 'purchase'

@@ -1,6 +1,6 @@
 %h1= "#{ShippingAddress.model_name.human}の編集"
 
-= simple_form_for(@cart, url: cart_path, method: :put) do |f|
+= simple_form_for(@cart, url: fix_shipping_address_cart_path, method: :put) do |f|
   = f.error_notification
   = f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present?
 

@@ -1,7 +1,7 @@
 class User::CartsController < User::ApplicationController
   before_action :authenticate_user!
   before_action :set_cart
-  before_action :set_delivery_schedule, only: [:edit_shipping_address, :update]
+  before_action :set_delivery_schedule, only: [:edit_shipping_address, :fix_shipping_address]
   before_action :check_external_changes_with_update, only: [:edit, :edit_shipping_address, :show]
 
   rescue_from ActiveRecord::StaleObjectError do |exception|
@@ -30,39 +30,37 @@ class User::CartsController < User::ApplicationController
     end
   end
 
-  def update
-    if params[:fix_products].present?
-      if @cart.fix_products(params.require(:cart)[:lock_version])
-        redirect_to edit_shipping_address_cart_path
-      else
-        # 画面に表示できるようなvalidationエラーは発生していないはず
-        logger.error @cart.joined_messages
-        redirect_to edit_cart_path, alert: "処理を続行できませんでした。しばらくしてから再度実施してください。"
-      end
-
-    elsif params[:fix_shipping_address].present?
-      args = params.require(:cart).permit(
-        :ref_shipping_address, :save_shipping_address, :delivery_scheduled_date, :delivery_scheduled_time, :lock_version,
-        shipping_address_attributes: [:id, :name, :postal_code, :prefecture, :city, :address, :building]).to_unsafe_hash.symbolize_keys
-      if @cart.fix_shipping_address(**args)
-        redirect_to cart_path
-      else
-        render :edit_shipping_address
-      end
-
-    elsif params[:purchase].present?
-      begin
-        if @cart.purchase(params.require(:cart)[:lock_version])
-          redirect_to show_complete_cart_path
-        else
-          # 画面に表示できるようなvalidationエラーは発生していないはず
-          logger.error @cart.joined_messages
-          redirect_to edit_shipping_address_cart_path, alert: "処理を続行できませんでした。しばらくしてから再度実施してください。"
-        end
-      rescue ShouldRestartCartError => e
-        redirect_to edit_cart_path
-      end
+  def fix_products
+    if @cart.fix_products(params.require(:cart)[:lock_version])
+      redirect_to edit_shipping_address_cart_path
+    else
+      # 画面に表示できるようなvalidationエラーは発生していないはず
+      logger.error @cart.joined_messages
+      redirect_to edit_cart_path, alert: "処理を続行できませんでした。しばらくしてから再度実施してください。"
     end
+  end
+
+  def fix_shipping_address
+    args = params.require(:cart).permit(
+      :ref_shipping_address, :save_shipping_address, :delivery_scheduled_date, :delivery_scheduled_time, :lock_version,
+      shipping_address_attributes: [:id, :name, :postal_code, :prefecture, :city, :address, :building]).to_unsafe_hash.symbolize_keys
+    if @cart.fix_shipping_address(**args)
+      redirect_to cart_path
+    else
+      render :edit_shipping_address
+    end
+  end
+
+  def purchase
+    if @cart.purchase(params.require(:cart)[:lock_version])
+      redirect_to show_complete_cart_path
+    else
+      # 画面に表示できるようなvalidationエラーは発生していないはず
+      logger.error @cart.joined_messages
+      redirect_to edit_shipping_address_cart_path, alert: "処理を続行できませんでした。しばらくしてから再度実施してください。"
+    end
+  rescue ShouldRestartCartError => e
+    redirect_to edit_cart_path
   end
 
   private

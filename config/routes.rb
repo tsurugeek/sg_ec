@@ -33,7 +33,7 @@ Rails.application.routes.draw do
         put :update_num
       end
     end
-    resource :cart, only: [:edit, :update, :show] do
+    resource :cart, only: [:edit, :show] do
       put 'fix_products'
       get 'edit_shipping_address'
       put 'fix_shipping_address'

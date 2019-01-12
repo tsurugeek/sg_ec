@@ -31,7 +31,7 @@
       = render 'total', cart: @cart
 
     .form-actions
-      = simple_form_for(@cart, url: cart_path, mothod: :put) do |f|
+      = simple_form_for(@cart, url: fix_products_cart_path, method: :put) do |f|
         = f.input :lock_version, as: :hidden, input_html: {data: {lock_version: ''}}
         = f.button :submit, "#{ShippingAddress.model_name.human}の編集画面に進む", class: 'btn-primary', name: 'fix_products'
 
