@@ -38,3 +38,6 @@
 :coffee
   $("a[data-method=delete]").click ->
     Rails.fire($(this).siblings("form").get(0), 'submit')
+  $(document).on "click", "td a[id*=num_change]", ->
+    $(this).closest("td").children("div").hide()
+    $(this).closest("td").children("form").show()
