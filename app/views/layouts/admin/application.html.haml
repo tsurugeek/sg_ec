@@ -12,7 +12,7 @@
       %nav.navbar.navbar-default.navbar-fixed-top
         .container-fluid
           .navbar-header
-            %a.navbar-brand{href: "#"} さくらマーケット管理
+            %a.navbar-brand{href: admin_root_path} さくらマーケット管理
           .collapse.navbar-collapse
             %ul.nav.navbar-nav
               = nav_item(User.model_name.human, admin_users_path, 'users')
