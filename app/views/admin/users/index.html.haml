@@ -1,0 +1,29 @@
+%h1= "#{User.model_name.human}の一覧"
+
+%table.table-striped.table-bordered.table-hover
+  %thead
+    %tr
+      %th= User.human_attribute_name(:email)
+      %th= User.human_attribute_name(:confirmed_at)
+      %th= ShippingAddress.human_attribute_name(:name)
+      %th= ShippingAddress.human_attribute_name(:postal_code)
+      %th= ShippingAddress.human_attribute_name(:prefecture)
+      %th= ShippingAddress.human_attribute_name(:address)
+      %th= ShippingAddress.human_attribute_name(:building)
+      %th
+      %th
+      %th
+
+  %tbody
+    - @users.each do |user|
+      %tr
+        %td= user.email
+        %td= user.confirmed_at.try(:to_s, :db)
+        %td= user.shipping_address.name
+        %td= user.shipping_address.postal_code
+        %td= user.shipping_address.prefecture
+        %td= user.shipping_address.address
+        %td= user.shipping_address.building
+        %td= link_to I18n.t('links.show'), [:admin, user]
+        %td= link_to I18n.t('links.edit'), edit_admin_user_path(user)
+        %td= link_to I18n.t('links.destroy'), [:admin, user], method: :delete, data: { confirm: 'Are you sure?' }

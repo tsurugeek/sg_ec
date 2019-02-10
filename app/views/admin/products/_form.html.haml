@@ -1,0 +1,16 @@
+-# frozen_string_literal: true
+= simple_form_for([:admin, @product]) do |f|
+  = f.error_notification
+  = f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present?
+
+  .form-inputs
+    = f.input :name
+    = f.input :price
+    = f.input :description
+    = f.input :hidden
+    = f.input :sort_no
+    = f.input :product_image, as: :file
+    = image_tag(@product.product_image_url) if @product.product_image?
+    = f.input :remove_product_image, as: :boolean
+  .form-actions
+    = f.button :submit, class: 'btn-primary'

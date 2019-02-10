@@ -1,0 +1,8 @@
+%p
+  こんにちは #{@email}!
+- if @resource.try(:unconfirmed_email?)
+  %p
+    We're contacting you to notify you that your email is being changed to #{@resource.unconfirmed_email}.
+- else
+  %p
+    あなたのE-mailが次のように変更されたので通知しました。 #{@resource.email}

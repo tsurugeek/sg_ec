@@ -1,0 +1,15 @@
+-# frozen_string_literal: true
+= simple_form_for([:admin, @user]) do |f|
+  = f.error_notification
+  = f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present?
+
+  = f.fields_for :shipping_address do |f_inner|
+    .form-inputs= f_inner.input :name
+    .form-inputs= f_inner.input :postal_code
+    .form-inputs= f_inner.input :prefecture
+    .form-inputs= f_inner.input :city
+    .form-inputs= f_inner.input :address
+    .form-inputs= f_inner.input :building
+
+  .form-actions
+    = f.button :submit, class: "btn-primary"

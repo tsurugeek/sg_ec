@@ -1,0 +1,33 @@
+%h1= "#{Cart.model_name.human}の確認"
+
+%table.table-striped.table-hover
+  %thead
+    %tr
+      %th{style: "width: 10%"}= PurchaseProduct.human_attribute_name(:product)
+      %th{style: "width: 35%"}
+      %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:price)
+      %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:num)
+      %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:total)
+      %th{style: "width: 10%"}
+
+  %tbody
+    - @cart.purchase_products.each do |purchase_product|
+      %tr{id: dom_id(purchase_product.product)}
+        %td= image_tag purchase_product.product.product_image_url(:thumb), class: 'media-object'
+        %td= purchase_product.name
+        %td.text-right= number_to_currency purchase_product.price
+        %td.text-right= number_with_delimiter purchase_product.num
+        %td.text-right= number_to_currency purchase_product.total
+  = render 'total', cart: @cart
+
+%h2= "#{ShippingAddress.model_name.human}の確認"
+= render 'shared/address', shipping_address: @cart.shipping_address
+
+%h2= "#{DeliverySchedule.model_name.human}の確認"
+= render 'shared/delivery_schedule', cart: @cart
+
+.form-actions
+  = simple_form_for(@cart, url: purchase_cart_path, method: :put) do |f|
+    = f.input :lock_version, as: :hidden
+    = link_to "戻る", edit_shipping_address_cart_path, class: 'btn btn-primary'
+    = f.button :submit, "確定", class: 'btn-primary', name: 'purchase'

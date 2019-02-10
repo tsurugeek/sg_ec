@@ -1,0 +1,25 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}
+    %title さくらマーケット管理
+    = csrf_meta_tags
+    = csp_meta_tag
+    = stylesheet_link_tag('application_admin', {media: 'all', 'data-turbolinks-track': 'reload'})
+    = javascript_include_tag('application_admin', {'data-turbolinks-track': 'reload'})
+  %body
+    - if admin_signed_in?
+      %nav.navbar.navbar-default.navbar-fixed-top
+        .container-fluid
+          .navbar-header
+            %a.navbar-brand{href: admin_root_path} さくらマーケット管理
+          .collapse.navbar-collapse
+            %ul.nav.navbar-nav
+              = nav_item(User.model_name.human, admin_users_path, 'users')
+              = nav_item(Product.model_name.human, admin_products_path, 'products')
+            %ul.nav.navbar-nav.navbar-right
+              %li= link_to "ログアウト", destroy_admin_session_path, class: "navbar-link", method: 'delete'
+    %main.container{role: "main", class: ("devise_main" if devise_controller?)}
+      = render "shared/messages", alert: :info, messages: notice
+      = render "shared/messages", alert: :danger, messages: alert
+      = yield

@@ -1,0 +1,10 @@
+%div{style: ('display: none' if cart_product.errors[:num].present?)}
+  = cart_product.num
+  = link_to "変更", "javascript:void(0)", {id: dom_id(cart_product.product, :num_change), remote: false}
+
+= simple_form_for(cart_product, url: update_num_product_cart_product_path(cart_product.product),
+      method: :put, remote: true,
+      html: {class: 'form-inline', style: ('display: none' unless cart_product.errors[:num].present?)}) do |f|
+  = hidden_field_tag "lock_version", cart_product.purchase.lock_version, data: {lock_version: ''}, id: nil
+  = f.input :num, input_html: {class: 'form-control input-sm form-inline', style: 'width: 60px', id: nil, display: 'inline'}, label: false
+  = f.submit "更新"

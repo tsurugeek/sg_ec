@@ -1,0 +1,31 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+    %title さくらマーケット管理
+    = csrf_meta_tags
+    = csp_meta_tag
+    = stylesheet_link_tag('application', {media: 'all', 'data-turbolinks-track': 'reload'})
+    = javascript_include_tag('application', {'data-turbolinks-track': 'reload'})
+  %body
+    %nav.navbar.navbar-default.navbar-fixed-top{id: 'navbar'}
+      .container-fluid
+        .navbar-header
+          %a.navbar-brand{href: root_path} さくらマーケット
+        .collapse.navbar-collapse
+          %ul.nav.navbar-nav
+            = nav_item('お買い物', products_path, ['products', 'cart_products'])
+          %ul.nav.navbar-nav
+            = nav_item(Cart.model_name.human, edit_cart_path, 'carts')
+          %ul.nav.navbar-nav
+            = nav_item(PurchaseHistory.model_name.human, purchase_histories_path, 'purchase_histories')
+
+          %ul.nav.navbar-nav.navbar-right
+            - if user_signed_in?
+              %li= link_to "ログアウト", destroy_user_session_path, class: "navbar-link", method: 'delete'
+            - else
+              %li= link_to "ログイン", new_user_session_path, class: "navbar-link"
+    %main.container{role: "main", class: ("devise_main" if devise_controller?)}
+      = render "shared/messages", alert: :info, messages: notice
+      = render "shared/messages", alert: :danger, messages: alert
+      = yield

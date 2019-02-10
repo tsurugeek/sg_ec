@@ -1,0 +1,16 @@
+%tfoot{id: 'total'}
+  %tr
+    %td.text-right{colspan: 4}= Cart.human_attribute_name(:subtotal)
+    %td.text-right= number_to_currency cart.subtotal
+  %tr
+    %td.text-right{colspan: 4}= Cart.human_attribute_name(:shipping_cost)
+    %td.text-right= number_to_currency cart.shipping_cost
+  %tr
+    %td.text-right{colspan: 4}= Cart.human_attribute_name(:cod_fee)
+    %td.text-right= number_to_currency cart.cod_fee
+  %tr
+    %td.text-right{colspan: 4}= "#{Cart.human_attribute_name(:consumption_tax)}(#{cart.consumption_tax_rate}%)"
+    %td.text-right= number_to_currency cart.consumption_tax
+  %tr
+    %td.text-right{colspan: 4}= Cart.human_attribute_name(:total)
+    %td.text-right= number_to_currency cart.total

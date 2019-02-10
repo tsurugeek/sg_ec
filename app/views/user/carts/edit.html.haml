@@ -1,0 +1,43 @@
+- if @cart.purchase_products.present?
+  %div#cart
+    %h1= "#{Cart.model_name.human}の編集"
+
+    %table.table-striped.table-hover
+      %thead
+        %tr
+          %th{style: "width: 10%"}= PurchaseProduct.human_attribute_name(:product)
+          %th{style: "width: 35%"}
+          %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:price)
+          %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:num)
+          %th.text-right{style: "width: 15%"}= PurchaseProduct.human_attribute_name(:total)
+          %th{style: "width: 10%"}
+      %tbody
+        - @cart.purchase_products.each do |purchase_product|
+          - product = purchase_product.product
+          %tr{id: dom_id(product)}
+            %td= image_tag product.product_image_url(:thumb), class: 'media-object'
+            %td= purchase_product.name
+            %td.text-right= number_to_currency purchase_product.price
+            %td.text-right{id: dom_id(product, :num)}
+              = render 'num', cart_product: purchase_product
+            %td.text-right{id: dom_id(product, :total)}
+              = number_to_currency purchase_product.total
+            %td.text-center
+              = link_to "削除", "javascript:void(0)", method: :delete
+              = simple_form_for(purchase_product, url: product_cart_product_path(product), method: :delete, remote: true, html: {style: 'display: none'}) do |f|
+                = hidden_field_tag "lock_version", @cart.lock_version, data: {lock_version: ''}, id: nil
+                = f.submit "削除"
+
+      = render 'total', cart: @cart
+
+    .form-actions
+      = simple_form_for(@cart, url: fix_products_cart_path, method: :put) do |f|
+        = f.input :lock_version, as: :hidden, input_html: {data: {lock_version: ''}}
+        = f.button :submit, "#{ShippingAddress.model_name.human}の編集画面に進む", class: 'btn-primary', name: 'fix_products'
+
+:coffee
+  $("a[data-method=delete]").click ->
+    Rails.fire($(this).siblings("form").get(0), 'submit')
+  $(document).on "click", "td a[id*=num_change]", ->
+    $(this).closest("td").children("div").hide()
+    $(this).closest("td").children("form").show()
